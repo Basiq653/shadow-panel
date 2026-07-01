@@ -4,11 +4,683 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shadow Panel</title>
-    <link rel="stylesheet" href="style.css">
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            height: 100vh;
+            background: #0a0a0a;
+            color: #eee;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            overflow: hidden;
+        }
+
+        /* ========== АВТОРИЗАЦИЯ ========== */
+        .login {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: radial-gradient(circle at 30% 20%, #1a1a2e22, #0a0a0a);
+        }
+
+        .card {
+            background: #111111ee;
+            backdrop-filter: blur(16px);
+            padding: 50px 40px;
+            border-radius: 24px;
+            width: 440px;
+            text-align: center;
+            border: 1px solid #222;
+            box-shadow: 0 25px 60px rgba(0, 255, 157, 0.04);
+            transition: 0.3s;
+        }
+
+        .card:hover {
+            border-color: #00ff9d33;
+            box-shadow: 0 25px 60px rgba(0, 255, 157, 0.08);
+        }
+
+        .card h1 {
+            color: #00ff9d;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 28px;
+            margin-bottom: 30px;
+            text-shadow: 0 0 25px #00ff9d44;
+        }
+
+        .input-group {
+            position: relative;
+            margin: 16px 0;
+        }
+
+        .input-group i {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #555;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 16px 18px 16px 48px;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 14px;
+            color: white;
+            font-size: 15px;
+            outline: none;
+            transition: 0.3s;
+        }
+
+        .input-group input:focus {
+            border-color: #00ff9d;
+            box-shadow: 0 0 18px #00ff9d22;
+        }
+
+        .input-group input:focus+i,
+        .input-group input:focus~i {
+            color: #00ff9d;
+        }
+
+        button {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 14px;
+            font-weight: 700;
+            font-size: 15px;
+            cursor: pointer;
+            letter-spacing: 0.5px;
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-primary {
+            background: #00ff9d;
+            color: #0a0a0a;
+        }
+        .btn-primary:hover {
+            background: #00e68a;
+            box-shadow: 0 0 30px #00ff9d44;
+            transform: translateY(-1px);
+        }
+        .btn-primary:active {
+            transform: scale(0.98);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #aaa;
+            border: 1px solid #333;
+        }
+        .btn-outline:hover {
+            border-color: #00ff9d;
+            color: #00ff9d;
+            background: #00ff9d0a;
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: #888;
+            border: none;
+            width: auto;
+            display: inline;
+            padding: 8px 16px;
+            font-size: 14px;
+            text-decoration: underline;
+            text-underline-offset: 4px;
+        }
+        .btn-ghost:hover {
+            color: #00ff9d;
+        }
+
+        .status-message {
+            margin-top: 20px;
+            font-size: 14px;
+            min-height: 20px;
+            font-weight: 500;
+            transition: 0.3s;
+        }
+        .status-message.error {
+            color: #ff4d6a;
+        }
+        .status-message.success {
+            color: #00ff9d;
+        }
+        .status-message.info {
+            color: #ffb74d;
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 24px 0;
+            color: #444;
+            font-size: 13px;
+        }
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: #222;
+        }
+        .divider span {
+            margin: 0 16px;
+        }
+
+        /* ========== ДЭШБОРД ========== */
+        .dashboard {
+            display: flex;
+            height: 100%;
+        }
+
+        .sidebar {
+            width: 260px;
+            background: #0d0d0d;
+            border-right: 1px solid #1a1a1a;
+            padding: 30px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sidebar h2 {
+            color: #00ff9d;
+            font-weight: 700;
+            letter-spacing: 2px;
+            font-size: 20px;
+            margin-bottom: 24px;
+            padding-left: 10px;
+        }
+
+        .sidebar .nav-item {
+            padding: 13px 16px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: 0.25s;
+            font-weight: 500;
+            font-size: 15px;
+            color: #999;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .nav-item i {
+            width: 20px;
+            text-align: center;
+            font-size: 16px;
+            color: #555;
+            transition: 0.25s;
+        }
+        .sidebar .nav-item:hover {
+            background: #1a1a1a;
+            color: #ddd;
+        }
+        .sidebar .nav-item:hover i {
+            color: #00ff9d;
+        }
+        .sidebar .nav-item.active {
+            background: #00ff9d11;
+            color: #00ff9d;
+            border: 1px solid #00ff9d22;
+        }
+        .sidebar .nav-item.active i {
+            color: #00ff9d;
+        }
+
+        .sidebar .spacer {
+            flex: 1;
+        }
+
+        .sidebar .logout-btn {
+            padding: 13px 16px;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: 0.25s;
+            font-weight: 500;
+            font-size: 15px;
+            color: #f66;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .sidebar .logout-btn:hover {
+            background: #ff4d6a15;
+        }
+        .sidebar .logout-btn i {
+            color: #f66;
+        }
+
+        .main {
+            flex: 1;
+            padding: 40px 50px;
+            overflow-y: auto;
+            background: #0a0a0a;
+        }
+        .main h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            color: #fff;
+        }
+        .main p {
+            color: #888;
+            line-height: 1.7;
+        }
+        .card-content {
+            background: #111;
+            border: 1px solid #222;
+            border-radius: 20px;
+            padding: 30px;
+            margin-top: 20px;
+        }
+        .tag {
+            display: inline-block;
+            background: #00ff9d15;
+            color: #00ff9d;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            border: 1px solid #00ff9d33;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top-color: #0a0a0a;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin-right: 8px;
+            vertical-align: middle;
+        }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    </style>
 </head>
 <body>
+
     <div id="root"></div>
-    <script src="app.js"></script>
+
+    <script>
+        // Инициализация Supabase (исправлено: supabase.createClient с маленькой буквы)
+        const supabaseClient = supabase.createClient(
+            'https://bozcxkjhlhjslperttio.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+        );
+
+        // Глобальное состояние
+        let currentView = 'login'; // 'login' | 'register' | 'dashboard'
+        let activeNav = 'panel';
+
+        // ========== ОТОБРАЖЕНИЕ ФОРМЫ АВТОРИЗАЦИИ ==========
+        function showAuthForm(view = 'login') {
+            currentView = view;
+            const isLogin = view === 'login';
+            const title = isLogin ? 'SHADOW PANEL' : 'РЕГИСТРАЦИЯ';
+            const btnText = isLogin ? 'Войти' : 'Зарегистрироваться';
+            const switchText = isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
+            const switchAction = isLogin ? "showAuthForm('register')" : "showAuthForm('login')";
+            const onSubmit = isLogin ? 'handleLogin()' : 'handleRegister()';
+
+            document.getElementById('root').innerHTML = `
+            <div class="login">
+              <div class="card">
+                <h1>${title}</h1>
+                <form id="authForm" onsubmit="event.preventDefault(); ${onSubmit}">
+                  <div class="input-group">
+                    <input type="email" id="email" placeholder="Email" required autocomplete="email">
+                    <i class="fas fa-envelope"></i>
+                  </div>
+                  <div class="input-group">
+                    <input type="password" id="password" placeholder="Пароль (минимум 6 символов)" required minlength="6" autocomplete="${isLogin ? 'current-password' : 'new-password'}">
+                    <i class="fas fa-lock"></i>
+                  </div>
+                  ${!isLogin ? `
+                  <div class="input-group">
+                    <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
+                    <i class="fas fa-check-circle"></i>
+                  </div>` : ''}
+                  <button type="submit" class="btn-primary" id="submitBtn">${btnText}</button>
+                </form>
+                <button class="btn-outline" onclick="${switchAction}">${switchText}</button>
+                <div class="status-message" id="status"></div>
+                ${isLogin ? `
+                <div class="divider"><span>или</span></div>
+                <button class="btn-ghost" onclick="showAuthForm('register')">Создать новый аккаунт</button>` : ''}
+              </div>
+            </div>
+          `;
+        }
+
+        // ========== ВАЛИДАЦИЯ EMAIL ==========
+        function isValidEmail(email) {
+            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+        }
+
+        // ========== УСТАНОВКА СТАТУСА ==========
+        function setStatus(message, type = 'error') {
+            const statusEl = document.getElementById('status');
+            if (!statusEl) return;
+            statusEl.textContent = message;
+            statusEl.className = 'status-message ' + type;
+        }
+
+        // ========== БЛОКИРОВКА КНОПКИ ==========
+        function setLoading(isLoading) {
+            const btn = document.getElementById('submitBtn');
+            if (!btn) return;
+            if (isLoading) {
+                btn.disabled = true;
+                btn.innerHTML = '<span class="spinner"></span> Загрузка...';
+            } else {
+                btn.disabled = false;
+                const isLogin = currentView === 'login';
+                btn.textContent = isLogin ? 'Войти' : 'Зарегистрироваться';
+            }
+        }
+
+        // ========== РЕГИСТРАЦИЯ ==========
+        async function handleRegister() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const passwordConfirm = document.getElementById('passwordConfirm')?.value;
+
+            // Валидация
+            if (!email || !password) {
+                setStatus('Заполните все поля', 'error');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                setStatus('Некорректный email', 'error');
+                return;
+            }
+            if (password.length < 6) {
+                setStatus('Пароль должен быть не менее 6 символов', 'error');
+                return;
+            }
+            if (passwordConfirm !== undefined && password !== passwordConfirm) {
+                setStatus('Пароли не совпадают', 'error');
+                return;
+            }
+
+            setLoading(true);
+            setStatus('');
+
+            const { data, error } = await supabaseClient.auth.signUp({
+                email,
+                password,
+            });
+
+            setLoading(false);
+
+            if (error) {
+                // Обработка типичных ошибок
+                if (error.message.includes('already registered') || error.message.includes('already exists')) {
+                    setStatus('Пользователь с таким email уже существует. Войдите.', 'error');
+                } else if (error.message.includes('password')) {
+                    setStatus('Пароль слишком простой. Используйте минимум 6 символов.', 'error');
+                } else {
+                    setStatus('Ошибка: ' + error.message, 'error');
+                }
+                return;
+            }
+
+            // Проверяем, нужно ли подтверждение email
+            if (data?.user?.identities?.length === 0) {
+                setStatus('Пользователь с таким email уже существует. Войдите.', 'error');
+                return;
+            }
+
+            if (data?.session === null) {
+                // Email confirmation required
+                setStatus('✅ Регистрация успешна! Проверьте почту для подтверждения email.', 'success');
+                // Очищаем поля
+                document.getElementById('email').value = '';
+                document.getElementById('password').value = '';
+                if (document.getElementById('passwordConfirm')) {
+                    document.getElementById('passwordConfirm').value = '';
+                }
+                // Через 3 секунды переключаем на вход
+                setTimeout(() => {
+                    showAuthForm('login');
+                    setStatus('Теперь вы можете войти после подтверждения email.', 'info');
+                }, 3000);
+            } else {
+                // Автоматический вход (если подтверждение не требуется)
+                setStatus('✅ Регистрация успешна! Выполняется вход...', 'success');
+                setTimeout(() => showDashboard(), 800);
+            }
+        }
+
+        // ========== ВХОД ==========
+        async function handleLogin() {
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!email || !password) {
+                setStatus('Заполните все поля', 'error');
+                return;
+            }
+            if (!isValidEmail(email)) {
+                setStatus('Некорректный email', 'error');
+                return;
+            }
+
+            setLoading(true);
+            setStatus('');
+
+            const { data, error } = await supabaseClient.auth.signInWithPassword({
+                email,
+                password,
+            });
+
+            setLoading(false);
+
+            if (error) {
+                if (error.message.includes('Invalid login credentials') || error.message.includes(
+                        'Invalid email or password')) {
+                    setStatus('Неверный email или пароль', 'error');
+                } else if (error.message.includes('Email not confirmed')) {
+                    setStatus('Email не подтверждён. Проверьте почту.', 'error');
+                } else {
+                    setStatus('Ошибка: ' + error.message, 'error');
+                }
+                return;
+            }
+
+            if (data?.session) {
+                setStatus('✅ Вход выполнен!', 'success');
+                setTimeout(() => showDashboard(), 500);
+            } else {
+                setStatus('Не удалось войти. Попробуйте позже.', 'error');
+            }
+        }
+
+        // ========== ДЭШБОРД ==========
+        function showDashboard() {
+            currentView = 'dashboard';
+            document.getElementById('root').innerHTML = `
+            <div class="dashboard">
+              <div class="sidebar">
+                <h2>🔮 SHADOW</h2>
+                <div class="nav-item ${activeNav === 'builder' ? 'active' : ''}" onclick="showBuilder()">
+                  <i class="fas fa-cubes"></i> Builder
+                </div>
+                <div class="nav-item ${activeNav === 'panel' ? 'active' : ''}" onclick="showPanel()">
+                  <i class="fas fa-tachometer-alt"></i> Панель
+                </div>
+                <div class="nav-item ${activeNav === 'subs' ? 'active' : ''}" onclick="showSubs()">
+                  <i class="fas fa-crown"></i> Подписки
+                </div>
+                <div class="nav-item ${activeNav === 'settings' ? 'active' : ''}" onclick="showSettings()">
+                  <i class="fas fa-gear"></i> Настройки
+                </div>
+                <div class="spacer"></div>
+                <div class="logout-btn" onclick="handleLogout()">
+                  <i class="fas fa-right-from-bracket"></i> Выйти
+                </div>
+              </div>
+              <div class="main" id="content">
+                ${getPanelContent()}
+              </div>
+            </div>
+          `;
+        }
+
+        function getPanelContent() {
+            return `
+            <h1>👋 Панель управления</h1>
+            <p>Добро пожаловать в <span class="tag">Shadow Panel</span></p>
+            <div class="card-content">
+              <p><i class="fas fa-check-circle" style="color:#00ff9d;"></i> Вы успешно авторизованы</p>
+              <p style="margin-top:10px;">Выберите раздел в боковом меню, чтобы начать работу.</p>
+            </div>
+          `;
+        }
+
+        function updateActiveNav(nav) {
+            activeNav = nav;
+            // Обновляем классы active в сайдбаре
+            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
+            const items = document.querySelectorAll('.nav-item');
+            const navMap = { builder: 0, panel: 1, subs: 2, settings: 3 };
+            if (items[navMap[nav]]) {
+                items[navMap[nav]].classList.add('active');
+            }
+        }
+
+        function showBuilder() {
+            updateActiveNav('builder');
+            document.getElementById('content').innerHTML = `
+            <h1>🧱 Builder</h1>
+            <div class="card-content">
+              <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Этот раздел доступен по подписке.</p>
+              <p style="margin-top:12px;">Перейдите в раздел <strong>Подписки</strong>, чтобы активировать доступ.</p>
+              <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="showSubs()">
+                <i class="fas fa-crown"></i> Перейти к подпискам
+              </button>
+            </div>
+          `;
+        }
+
+        function showPanel() {
+            updateActiveNav('panel');
+            document.getElementById('content').innerHTML = getPanelContent();
+        }
+
+        function showSubs() {
+            updateActiveNav('subs');
+            document.getElementById('content').innerHTML = `
+            <h1>💎 Подписки</h1>
+            <div class="card-content">
+              <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
+              <p style="margin-top:8px; color:#888;">Полный доступ к Builder и всем инструментам.</p>
+              <button class="btn-primary" style="width:auto; margin-top:16px; padding:12px 28px;" disabled>
+                <i class="fas fa-credit-card"></i> Оплатить (скоро)
+              </button>
+              <p style="margin-top:12px; font-size:13px; color:#555;">Платёжная система в разработке.</p>
+            </div>
+          `;
+        }
+
+        function showSettings() {
+            updateActiveNav('settings');
+            document.getElementById('content').innerHTML = `
+            <h1>⚙️ Настройки</h1>
+            <div class="card-content">
+              <p>Настройки аккаунта и безопасности.</p>
+              <p style="margin-top:12px; color:#888;">Email: <strong id="userEmail">загрузка...</strong></p>
+              <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="handleLogout()">
+                <i class="fas fa-right-from-bracket"></i> Выйти из аккаунта
+              </button>
+            </div>
+          `;
+            // Загружаем email пользователя
+            loadUserEmail();
+        }
+
+        async function loadUserEmail() {
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            const emailEl = document.getElementById('userEmail');
+            if (emailEl && user?.email) {
+                emailEl.textContent = user.email;
+            } else if (emailEl) {
+                emailEl.textContent = 'неизвестно';
+            }
+        }
+
+        // ========== ВЫХОД ==========
+        async function handleLogout() {
+            const { error } = await supabaseClient.auth.signOut();
+            if (error) {
+                console.error('Ошибка выхода:', error);
+            }
+            // Принудительно показываем форму входа
+            currentView = 'login';
+            activeNav = 'panel';
+            showAuthForm('login');
+        }
+
+        // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
+        window.onload = async () => {
+            try {
+                const { data: { session } } = await supabaseClient.auth.getSession();
+                if (session) {
+                    // Проверяем, что пользователь всё ещё валиден
+                    const { data: { user } } = await supabaseClient.auth.getUser();
+                    if (user) {
+                        showDashboard();
+                        return;
+                    }
+                }
+                // Нет сессии — показываем вход
+                showAuthForm('login');
+            } catch (e) {
+                console.error('Ошибка инициализации:', e);
+                showAuthForm('login');
+            }
+        };
+
+        // ========== ОТСЛЕЖИВАНИЕ ИЗМЕНЕНИЙ АВТОРИЗАЦИИ ==========
+        supabaseClient.auth.onAuthStateChange((event, session) => {
+            if (event === 'SIGNED_OUT') {
+                currentView = 'login';
+                activeNav = 'panel';
+                showAuthForm('login');
+            } else if (event === 'SIGNED_IN' && session) {
+                if (currentView !== 'dashboard') {
+                    showDashboard();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
