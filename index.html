@@ -6,10 +6,111 @@
     <title>Shadow Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
+    <style>
+        body { margin:0; height:100vh; background:#0a0a0a; color:#eee; font-family:Segoe UI; overflow:hidden; }
+        .screen { height:100%; display:flex; align-items:center; justify-content:center; }
+        .card { background:#111; padding:50px; border-radius:20px; width:420px; text-align:center; border:1px solid #00ff9d30; }
+        h1 { color:#00ff9d; margin-bottom:30px; }
+        input { width:100%; padding:16px; margin:12px 0; background:#1a1a2e; border:1px solid #333; border-radius:12px; color:white; }
+        button { width:100%; padding:16px; margin:12px 0; border:none; border-radius:12px; font-weight:bold; cursor:pointer; }
+        .btn1 { background:#00ff9d; color:black; }
+        .btn2 { background:#222; color:white; }
+        .dashboard { display:flex; height:100%; }
+        .sidebar { width:260px; background:#111; border-right:1px solid #222; padding:25px; }
+        .main { flex:1; padding:40px; overflow:auto; }
+        .nav { padding:14px 20px; margin:8px 0; border-radius:8px; cursor:pointer; }
+        .nav:hover { background:#1a1a1a; color:#00ff9d; }
+    </style>
 </head>
 <body>
+
     <div id="root"></div>
-    <script src="app.js"></script>
+
+    <script>
+        const supabase = Supabase.createClient(
+            'https://bozcxkjhlhjslperttio.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+        );
+
+        function showLogin() {
+            document.getElementById('root').innerHTML = `
+                <div class="screen">
+                    <div class="card">
+                        <h1>SHADOW PANEL</h1>
+                        <input type="email" id="email" placeholder="Email">
+                        <input type="password" id="password" placeholder="Пароль">
+                        <button class="btn1" onclick="login()">Войти</button>
+                        <button class="btn2" onclick="register()">Зарегистрироваться</button>
+                        <p id="status" style="margin-top:20px"></p>
+                    </div>
+                </div>
+            `;
+        }
+
+        async function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            const { error } = await supabase.auth.signUp({ email, password });
+            status.style.color = error ? 'red' : 'lime';
+            status.textContent = error ? error.message : 'Зарегистрировано! Войдите.';
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+            
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) {
+                status.style.color = 'red';
+                status.textContent = error.message;
+            } else {
+                showDashboard();
+            }
+        }
+
+        function showDashboard() {
+            document.getElementById('root').innerHTML = `
+                <div class="dashboard">
+                    <div class="sidebar">
+                        <h2 style="color:#00ff9d">SHADOW</h2>
+                        <div class="nav" onclick="showBuilder()">Builder</div>
+                        <div class="nav" onclick="showPanel()">Панель</div>
+                        <div class="nav" onclick="showSubs()">Подписки</div>
+                        <div onclick="logout()" style="margin-top:150px;color:#f66;cursor:pointer">Выйти</div>
+                    </div>
+                    <div class="main" id="content">
+                        <h1>Добро пожаловать в Shadow Panel</h1>
+                    </div>
+                </div>
+            `;
+        }
+
+        function showBuilder() {
+            document.getElementById('content').innerHTML = `<h1>Builder</h1><p>Купи подписку для создания билдов</p>`;
+        }
+
+        function showPanel() {
+            document.getElementById('content').innerHTML = `<h1>Панель управления</h1><p>Здесь будут клиенты</p>`;
+        }
+
+        function showSubs() {
+            document.getElementById('content').innerHTML = `<h1>Подписки</h1><p>1 месяц - 500₽<br>1 год - 5500₽<br>Навсегда - 50000₽</p>`;
+        }
+
+        function logout() {
+            supabase.auth.signOut();
+            location.reload();
+        }
+
+        // Запуск
+        window.onload = async () => {
+            const { data } = await supabase.auth.getSession();
+            if (data.session) showDashboard();
+            else showLogin();
+        };
+    </script>
 </body>
 </html>
