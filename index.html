@@ -6,21 +6,89 @@
     <title>Shadow Panel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    
     <style>
-        body { background:#0a0a0a; color:#fff; font-family:Arial; margin:0; height:100vh; display:flex; align-items:center; justify-content:center; }
-        .box { background:#111; padding:60px; border-radius:16px; border:1px solid #333; text-align:center; width:420px; }
-        input, button { width:100%; padding:16px; margin:12px 0; border-radius:8px; }
-        input { background:#1a1a1a; border:1px solid #444; color:white; }
-        button { background:#00ff9d; color:black; font-weight:bold; border:none; cursor:pointer; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            height: 100vh;
+            background: linear-gradient(135deg, #0a0a0a, #1a0033);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Segoe UI', sans-serif;
+            color: #e0e0e0;
+        }
+        .login-container {
+            background: rgba(20, 20, 30, 0.95);
+            padding: 50px 40px;
+            border-radius: 20px;
+            border: 1px solid #00ff9d33;
+            width: 420px;
+            box-shadow: 0 0 40px rgba(0, 255, 157, 0.15);
+            text-align: center;
+        }
+        .logo {
+            font-size: 42px;
+            font-weight: 800;
+            color: #00ff9d;
+            margin-bottom: 10px;
+            letter-spacing: 4px;
+        }
+        .subtitle {
+            color: #888;
+            margin-bottom: 40px;
+        }
+        input {
+            width: 100%;
+            padding: 16px 20px;
+            margin: 12px 0;
+            background: #1a1a2e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            transition: 0.3s;
+        }
+        input:focus {
+            border-color: #00ff9d;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(0, 255, 157, 0.1);
+        }
+        button {
+            width: 100%;
+            padding: 16px;
+            margin: 12px 0;
+            border: none;
+            border-radius: 12px;
+            font-size: 17px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        .btn-login {
+            background: linear-gradient(90deg, #00ff9d, #00cc7a);
+            color: #000;
+        }
+        .btn-register {
+            background: #222;
+            color: #aaa;
+        }
+        .btn-login:hover { transform: translateY(-2px); }
     </style>
 </head>
 <body>
-    <div class="box">
-        <h1>SHADOW PANEL</h1>
+
+    <div class="login-container">
+        <div class="logo">SHADOW</div>
+        <div class="subtitle">PANEL</div>
+        
         <input type="email" id="email" placeholder="Email">
         <input type="password" id="password" placeholder="Пароль">
-        <button onclick="login()">Войти</button>
-        <button onclick="register()" style="background:#333;">Зарегистрироваться</button>
+        
+        <button class="btn-login" onclick="login()">Войти</button>
+        <button class="btn-register" onclick="register()">Зарегистрироваться</button>
+        
+        <p id="status" style="margin-top:15px; min-height:24px; color:#0f0;"></p>
     </div>
 
     <script>
@@ -32,17 +100,54 @@
         async function register() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
-            if (!email || password.length < 6) return alert("Введите данные");
+            const status = document.getElementById('status');
+
+            if (!email || password.length < 6) {
+                status.style.color = '#ff6666';
+                status.textContent = "Введите email и пароль (минимум 6 символов)";
+                return;
+            }
+
+            status.style.color = '#ffff00';
+            status.textContent = "Регистрация...";
+
             const { error } = await supabase.auth.signUp({ email, password });
-            alert(error ? error.message : "Регистрация прошла! Войдите.");
+
+            if (error) {
+                status.style.color = '#ff6666';
+                status.textContent = error.message;
+            } else {
+                status.style.color = '#00ff9d';
+                status.textContent = "✅ Успешно! Теперь войдите.";
+            }
         }
 
         async function login() {
             const email = document.getElementById('email').value;
             const password = document.getElementById('password').value;
+            const status = document.getElementById('status');
+
+            if (!email || !password) {
+                status.style.color = '#ff6666';
+                status.textContent = "Заполните все поля";
+                return;
+            }
+
+            status.style.color = '#ffff00';
+            status.textContent = "Вход...";
+
             const { error } = await supabase.auth.signInWithPassword({ email, password });
-            if (error) alert(error.message);
-            else alert("Вход выполнен! (Панель в разработке)");
+
+            if (error) {
+                status.style.color = '#ff6666';
+                status.textContent = error.message;
+            } else {
+                status.style.color = '#00ff9d';
+                status.textContent = "✅ Вход выполнен! Загружаем панель...";
+                setTimeout(() => {
+                    alert("Панель управления (в разработке)");
+                }, 800);
+            }
         }
     </script>
 </body>
