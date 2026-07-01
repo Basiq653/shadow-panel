@@ -163,7 +163,14 @@
 <script>
     const supabaseClient = supabase.createClient(
         'https://bozcxkjhlhjslperttio.supabase.co',
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg',
+        {
+            auth: {
+                flowType: 'implicit',
+                detectSessionInUrl: true,
+                persistSession: true,
+            }
+        }
     );
 
     let currentView = 'login';
@@ -236,7 +243,6 @@
     function updateActiveNav(nav){ activeNav=nav; document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); const m={panel:0,builder:1,notify:2,community:3,subs:4,settings:5}; const items=document.querySelectorAll('.nav-item'); if(items[m[nav]]) items[m[nav]].classList.add('active'); }
 
     function getPanelContent(){
-        // Только создатели видят устройства
         if (!isCreator) {
             return `<h1>Панель управления</h1><p>Нет подключённых устройств</p>
             <div class="card-content"><p>У вас нет активных клиентов. Приобретите подписку для доступа к Builder.</p></div>`;
@@ -324,17 +330,23 @@
     
     function showSubs(){
         updateActiveNav('subs');
-        const alreadyPurchased = hasPurchased || isCreator;
+        // Всегда показываем кнопку "Купить" для тестирования
         document.getElementById('content').innerHTML = `
         <h1>Подписки</h1>
         <div class="card-content">
           <p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
-          ${alreadyPurchased ? 
-            '<p style="color:#00ff9d; margin-top:16px;">Подписка активна. Builder разблокирован.</p>' :
-            '<button class="btn-primary" style="width:auto; margin-top:16px;" onclick="openPurchaseModal()">Купить</button>'
-          }
+          ${hasPurchased ? '<p style="color:#00ff9d; margin-top:12px;">Статус: подписка активна (но вы можете купить ещё раз)</p>' : ''}
+          <button class="btn-primary" style="width:auto; margin-top:16px;" onclick="openPurchaseModal()">Купить</button>
+          ${hasPurchased ? '<button class="btn-outline" style="width:auto; margin-top:8px;" onclick="resetPurchase()">Сбросить подписку (тест)</button>' : ''}
         </div>`;
     }
+
+    // Сброс флага покупки для тестирования
+    window.resetPurchase = function() {
+        localStorage.removeItem('laprpanel_purchased');
+        hasPurchased = false;
+        showSubs(); // обновим страницу
+    };
 
     function showSettings(){
         updateActiveNav('settings');
@@ -368,7 +380,7 @@
         closeModal();
         hasPurchased = true;
         localStorage.setItem('laprpanel_purchased', 'true');
-        // Генерация портов и пароля в стиле larppanel.домен:порт
+        // Генерация портов и пароля
         const randomDomain = Math.random().toString(36).substring(2, 6) + '.' + 
                              Math.random().toString(36).substring(2, 6) + '.' + 
                              Math.random().toString(36).substring(2, 6);
@@ -394,7 +406,6 @@
     window.showScreenViewer = function(deviceName) {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
-        // Используем локальное видео (Big Buck Bunny)
         content.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 style="color:#00ff9d;">Screen Viewer - ${deviceName}</h3>
@@ -518,19 +529,20 @@
     }
 
     window.onload = async () => {
-        const {data:{session}} = await supabaseClient.auth.getSession();
-        if (session) {
-            const {data:{user}} = await supabaseClient.auth.getUser();
-            isCreator = ['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
+        const {data:{user}} = await supabaseClient.auth.getUser();
+        if (user) {
+            isCreator = ['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user.email);
             hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
             showDashboard();
-        } else showAuthForm('login');
+        } else {
+            showAuthForm('login');
+        }
     };
     supabaseClient.auth.onAuthStateChange((event,session)=>{
         if (event==='SIGNED_OUT') { currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
         else if (event==='SIGNED_IN' && session) {
             supabaseClient.auth.getUser().then(({data:{user}})=>{
-                isCreator=['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
+                isCreator=['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user.email);
                 hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
                 showDashboard();
             });
