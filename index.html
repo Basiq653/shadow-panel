@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shadow Panel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+    <style>
+        body { background:#0a0a0a; color:#fff; font-family:Arial; margin:0; height:100vh; display:flex; align-items:center; justify-content:center; }
+        .box { background:#111; padding:60px; border-radius:16px; border:1px solid #333; text-align:center; width:420px; }
+        input, button { width:100%; padding:16px; margin:12px 0; border-radius:8px; }
+        input { background:#1a1a1a; border:1px solid #444; color:white; }
+        button { background:#00ff9d; color:black; font-weight:bold; border:none; cursor:pointer; }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>SHADOW PANEL</h1>
+        <input type="email" id="email" placeholder="Email">
+        <input type="password" id="password" placeholder="Пароль">
+        <button onclick="login()">Войти</button>
+        <button onclick="register()" style="background:#333;">Зарегистрироваться</button>
+    </div>
+
+    <script>
+        const supabase = Supabase.createClient(
+            'https://bozcxkjhlhjslperttio.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+        );
+
+        async function register() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            if (!email || password.length < 6) return alert("Введите данные");
+            const { error } = await supabase.auth.signUp({ email, password });
+            alert(error ? error.message : "Регистрация прошла! Войдите.");
+        }
+
+        async function login() {
+            const email = document.getElementById('email').value;
+            const password = document.getElementById('password').value;
+            const { error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) alert(error.message);
+            else alert("Вход выполнен! (Панель в разработке)");
+        }
+    </script>
+</body>
+</html>
