@@ -169,6 +169,7 @@
     let currentView = 'login';
     let activeNav = 'panel';
     let isCreator = false;
+    let hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
 
     function showAuthForm(view = 'login') {
         currentView = view;
@@ -215,6 +216,10 @@
         const {data:{user}}=await supabaseClient.auth.getUser();
         const creators=['kilersosiska130@gmail.com','mamkoebar@gmail.com'];
         isCreator=creators.includes(user?.email);
+        // Если куплено, но не создатель, всё равно даём доступ
+        if (hasPurchased && !isCreator) {
+            // добавим флаг, чтобы Builder показывался
+        }
         document.getElementById('root').innerHTML=`
         <div class="dashboard">
           <div class="sidebar">
@@ -272,6 +277,16 @@
 
     function showBuilder(){
         updateActiveNav('builder');
+        // Проверяем доступ: создатель или купивший
+        if (!isCreator && !hasPurchased) {
+            document.getElementById('content').innerHTML = `
+            <h1>Builder</h1>
+            <div class="card-content">
+              <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Требуется подписка</p>
+              <button class="btn-outline" style="width:auto; margin-top:16px;" onclick="showSubs()">Перейти к подпискам</button>
+            </div>`;
+            return;
+        }
         document.getElementById('content').innerHTML=`
         <h1>Builder</h1><div class="card-content"><p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
         <div class="build-form">
@@ -303,7 +318,21 @@
 
     function showNotify(){ updateActiveNav('notify'); document.getElementById('content').innerHTML='<h1>Уведомления</h1><div class="card-content"><p>Настройка уведомлений.</p></div>'; }
     function showCommunity(){ updateActiveNav('community'); document.getElementById('content').innerHTML='<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>'; }
-    function showSubs(){ updateActiveNav('subs'); document.getElementById('content').innerHTML='<h1>Подписки</h1><div class="card-content"><p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p><button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button></div>'; }
+    
+    function showSubs(){
+        updateActiveNav('subs');
+        const alreadyPurchased = hasPurchased;
+        document.getElementById('content').innerHTML = `
+        <h1>Подписки</h1>
+        <div class="card-content">
+          <p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
+          ${alreadyPurchased ? 
+            '<p style="color:#00ff9d; margin-top:16px;">Подписка активна. Builder разблокирован.</p>' :
+            '<button class="btn-primary" style="width:auto; margin-top:16px;" onclick="purchaseSubscription()">Купить</button>'
+          }
+        </div>`;
+    }
+
     function showSettings(){
         updateActiveNav('settings');
         document.getElementById('content').innerHTML='<h1>Настройки</h1><div class="card-content"><p>Email: <strong id="userEmail">загрузка...</strong></p><button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button></div>';
@@ -312,12 +341,41 @@
 
     async function handleLogout(){ await supabaseClient.auth.signOut(); currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
 
+    // Фейковая покупка
+    window.purchaseSubscription = function() {
+        // Генерируем случайные порты и пароль
+        const ports = `25565, 19132, 8123, 4444`;
+        const password = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
+        
+        // Устанавливаем флаг покупки
+        hasPurchased = true;
+        localStorage.setItem('laprpanel_purchased', 'true');
+        
+        // Показываем уведомление с данными
+        const container = document.getElementById('notifications-container');
+        const notif = document.createElement('div');
+        notif.className = 'notification-item';
+        notif.innerHTML = `
+            <div class="progress-text" style="color:#00ff9d;">Покупка успешна!</div>
+            <div style="font-size:14px; color:#ccc;">
+                <div>Порты: ${ports}</div>
+                <div>Пароль: ${password}</div>
+            </div>
+            <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
+        container.appendChild(notif);
+        
+        // Автоматически удаляем через 8 секунд
+        setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
+        
+        // Обновляем страницу подписок и меню (Builder должен стать доступен)
+        showSubs();
+    };
+
     // ---------- Screen Viewer (YouTube Dota 2 видео) ----------
     window.showScreenViewer = function(deviceName) {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
-        // Видео Dota 2 gameplay (без звука, автовоспроизведение)
-        const videoId = "3R3-X4Sd-X4"; // можно заменить на любое другое
+        const videoId = "3R3-X4Sd-X4"; // Dota 2 gameplay
         content.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 style="color:#00ff9d;">Screen Viewer - ${deviceName}</h3>
@@ -392,6 +450,7 @@
         if (session) {
             const {data:{user}} = await supabaseClient.auth.getUser();
             isCreator = ['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
+            hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
             showDashboard();
         } else showAuthForm('login');
     };
@@ -400,6 +459,7 @@
         else if (event==='SIGNED_IN' && session) {
             supabaseClient.auth.getUser().then(({data:{user}})=>{
                 isCreator=['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
+                hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
                 showDashboard();
             });
         }
