@@ -13,7 +13,6 @@
             height:100vh; background:#07070c; color:#e0e0e0;
             font-family:'Inter','Segoe UI',system-ui,sans-serif; overflow:hidden; letter-spacing:0.2px;
         }
-        /* АВТОРИЗАЦИЯ */
         .login {
             display:flex; align-items:center; justify-content:center; height:100%; width:100%;
             background: radial-gradient(ellipse at 30% 30%, #14142a 0%, #07070c 70%);
@@ -49,7 +48,6 @@
         .status-message.success { color:#00ff9d; background:rgba(0,255,157,0.08); }
         .status-message.info { color:#ffb74d; background:rgba(255,183,77,0.08); }
 
-        /* ДЭШБОРД */
         .dashboard { display:flex; height:100vh; width:100%; background:#07070c; }
         .sidebar {
             width:270px; background:rgba(10,10,16,0.9); backdrop-filter:blur(16px);
@@ -107,7 +105,6 @@
         .build-form input[type="checkbox"] { width:18px; height:18px; accent-color:#00ff9d; }
         .module-group { display:flex; flex-wrap:wrap; gap:15px; }
 
-        /* Таблица */
         .device-table { width:100%; border-collapse:collapse; margin-top:10px; }
         .device-table th { text-align:left; padding:12px 8px; font-weight:500; color:#aaa; border-bottom:1px solid #2a2a3a; }
         .device-table td { padding:12px 8px; border-bottom:1px solid #1f1f2e; font-size:14px; }
@@ -126,7 +123,6 @@
         }
         .action-menu div:hover { background:#00ff9d10; color:#00ff9d; }
 
-        /* Уведомления */
         #notifications-container {
             position:fixed; top:20px; right:20px; z-index:1100; display:flex; flex-direction:column; gap:10px;
             pointer-events:none;
@@ -143,7 +139,6 @@
         }
         .notification-item .close-notify { align-self:flex-end; cursor:pointer; color:#888; }
 
-        /* Модальное окно */
         #modal-overlay {
             display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:2000;
             align-items:center; justify-content:center;
@@ -152,6 +147,9 @@
         #modal-content {
             background:#1a1a2e; border-radius:16px; padding:20px; min-width:800px; position:relative;
             border:1px solid #2a2a3a;
+        }
+        .screen-video {
+            width:100%; border-radius:8px; height:500px; border: none;
         }
     </style>
 </head>
@@ -314,36 +312,25 @@
 
     async function handleLogout(){ await supabaseClient.auth.signOut(); currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
 
-    // ---------- Фейковый экран ----------
+    // ---------- Screen Viewer (YouTube Dota 2 видео) ----------
     window.showScreenViewer = function(deviceName) {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
+        // Видео Dota 2 gameplay (без звука, автовоспроизведение)
+        const videoId = "3R3-X4Sd-X4"; // можно заменить на любое другое
         content.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 style="color:#00ff9d;">Screen Viewer - ${deviceName}</h3>
             <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
         </div>
-        <div style="background:#0078d4; border-radius:8px; overflow:hidden; height:500px; display:flex; flex-direction:column;">
-            <div style="background:#f0f0f0; height:30px; display:flex; align-items:center; padding:0 10px; color:#333;">
-                <i class="fas fa-windows"></i> <span style="margin-left:8px;">Desktop</span>
-            </div>
-            <div style="flex:1; background:#008080; display:flex; align-items:center; justify-content:center; gap:30px;">
-                <div style="background:white; width:220px; height:160px; border-radius:4px; box-shadow:0 2px 10px rgba(0,0,0,0.3); padding:10px; color:#333;">
-                    <p><b>File Explorer</b></p><p style="font-size:12px;">📁 Documents</p>
-                </div>
-                <div style="background:white; width:220px; height:160px; border-radius:4px; box-shadow:0 2px 10px rgba(0,0,0,0.3); padding:10px; color:#333;">
-                    <p><b>Browser</b></p><p style="font-size:12px;">🌐 https://example.com</p>
-                </div>
-            </div>
-            <div style="background:#333; height:35px; display:flex; align-items:center; padding:0 15px; color:white; gap:15px;">
-                <i class="fab fa-windows"></i> <span>Start</span>
-            </div>
-        </div>`;
+        <iframe class="screen-video" 
+                src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=1" 
+                allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
         overlay.classList.add('open');
     };
     window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
 
-    // ---------- Стилер с уведомлением ----------
+    // ---------- Stiller ----------
     window.startStiller = function(deviceName, deviceId) {
         const container = document.getElementById('notifications-container');
         const notifId = `stiller-${deviceId}-${Date.now()}`;
@@ -373,7 +360,7 @@
                 const status = notif.querySelector('.stiller-status');
                 if (status) status.textContent = 'Сбор завершён';
             }
-        }, 750); // 15 секунд = 750*20 = 15000ms
+        }, 750);
     };
 
     async function downloadStiller(deviceName, notifId) {
@@ -396,8 +383,6 @@
         a.click();
         document.body.removeChild(a);
         URL.revokeObjectURL(url);
-
-        // Удаляем уведомление
         const notif = document.getElementById(notifId);
         if (notif) notif.remove();
     }
