@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shadow Panel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <title>laprpanel</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
+    </script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         * {
@@ -20,10 +21,9 @@
             font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
             letter-spacing: 0.2px;
-            /* убрали display:flex, выравнивание зададим только для контейнера входа */
         }
 
-        /* АВТОРИЗАЦИЯ — центрируем с помощью .login */
+        /* АВТОРИЗАЦИЯ */
         .login {
             display: flex;
             align-items: center;
@@ -308,6 +308,37 @@
             flex-wrap: wrap;
             gap: 15px;
         }
+
+        /* Таблица устройств */
+        .device-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        .device-table th {
+            text-align: left;
+            padding: 12px 8px;
+            font-weight: 500;
+            color: #aaa;
+            border-bottom: 1px solid #2a2a3a;
+        }
+        .device-table td {
+            padding: 12px 8px;
+            border-bottom: 1px solid #1f1f2e;
+            font-size: 14px;
+        }
+        .device-table tr:hover td {
+            background: rgba(255,255,255,0.02);
+        }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-online { background: #00ff9d; }
+        .status-offline { background: #555; }
     </style>
 </head>
 <body>
@@ -330,7 +361,7 @@
         document.getElementById('root').innerHTML = `
         <div class="login">
           <div class="card">
-            <h1>SHADOW PANEL</h1>
+            <h1>LAPRPANEL</h1>
             <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
               <div class="input-group">
                 <input type="email" id="email" placeholder="Email" required>
@@ -404,7 +435,7 @@
         document.getElementById('root').innerHTML = `
         <div class="dashboard">
           <div class="sidebar">
-            <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
+            <h2>LAPRPANEL<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
             <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()">
               <i class="fas fa-users"></i> Панель
             </div>
@@ -441,15 +472,35 @@
     }
 
     function getPanelContent() {
+        const devices = [
+            { id: 'A7F3C2', name: 'DESKTOP-A1B2C3', os: 'Windows 10 Pro', ip: '45.132.18.77', country: 'Russia', status: 'online' },
+            { id: 'D4E1B9', name: 'LAPTOP-X7Y8Z9', os: 'Windows 11', ip: '91.200.12.44', country: 'Kazakhstan', status: 'offline' },
+            { id: 'F0C8A2', name: 'SERVER-DB01', os: 'Ubuntu 22.04', ip: '185.45.67.11', country: 'Netherlands', status: 'online' },
+            { id: '1B5E7D', name: 'OFFICE-PC', os: 'Windows 10 LTSC', ip: '78.56.130.90', country: 'Germany', status: 'online' },
+            { id: '3A9F6C', name: 'HOME-PC', os: 'macOS Monterey', ip: '123.45.67.89', country: 'USA', status: 'offline' }
+        ];
+
+        let rows = devices.map(d => `
+            <tr>
+                <td>${d.id}</td>
+                <td>${d.name}</td>
+                <td>${d.os}</td>
+                <td>${d.ip}</td>
+                <td>${d.country}</td>
+                <td><span class="status-dot ${d.status==='online'?'status-online':'status-offline'}"></span>${d.status==='online'?'Online':'Offline'}</td>
+            </tr>
+        `).join('');
+
         return `
         <h1>Панель управления</h1>
-        <p>Список подключенных устройств <span class="tag">Demo</span></p>
+        <p>Подключённые устройства <span class="tag">${devices.length} активных</span></p>
         <div class="card-content">
-          <table style="width:100%; border-collapse:collapse;">
-            <thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>Статус</th></tr></thead>
+          <table class="device-table">
+            <thead>
+              <tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th></tr>
+            </thead>
             <tbody>
-              <tr><td>1024</td><td>DESKTOP-A1B2C3</td><td>Windows 10 Pro</td><td><span style="color:#00ff9d">●</span> Online</td></tr>
-              <tr><td>2048</td><td>LAPTOP-X7Y8Z9</td><td>Windows 11</td><td><span style="color:#555">●</span> Offline</td></tr>
+              ${rows}
             </tbody>
           </table>
         </div>`;
