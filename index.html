@@ -16,10 +16,11 @@
 
         body {
             height: 100vh;
-            background: #0a0a0a;
-            color: #eee;
-            font-family: 'Segoe UI', system-ui, sans-serif;
+            background: #07070c;
+            color: #e0e0e0;
+            font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
             overflow: hidden;
+            letter-spacing: 0.2px;
         }
 
         /* ========== АВТОРИЗАЦИЯ ========== */
@@ -28,38 +29,50 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            background: radial-gradient(circle at 30% 20%, #1a1a2e22, #0a0a0a);
+            background: radial-gradient(ellipse at 30% 30%, #14142a 0%, #07070c 70%);
+            position: relative;
+        }
+
+        .login::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M10 10 L90 10 L90 90 L10 90 Z" fill="none" stroke="white" stroke-width="0.5"/></svg>') repeat;
+            pointer-events: none;
         }
 
         .card {
-            background: #111111ee;
-            backdrop-filter: blur(16px);
-            padding: 50px 40px;
-            border-radius: 24px;
-            width: 440px;
+            background: rgba(12, 12, 18, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 50px 44px;
+            border-radius: 28px;
+            width: 460px;
             text-align: center;
-            border: 1px solid #222;
-            box-shadow: 0 25px 60px rgba(0, 255, 157, 0.04);
-            transition: 0.3s;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 157, 0.15);
+            transition: 0.3s ease;
+            z-index: 2;
         }
 
         .card:hover {
-            border-color: #00ff9d33;
-            box-shadow: 0 25px 60px rgba(0, 255, 157, 0.08);
+            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 255, 157, 0.3);
         }
 
         .card h1 {
-            color: #00ff9d;
-            font-weight: 700;
-            letter-spacing: 2px;
+            font-weight: 600;
+            letter-spacing: 1.8px;
             font-size: 28px;
-            margin-bottom: 30px;
-            text-shadow: 0 0 25px #00ff9d44;
+            margin-bottom: 32px;
+            background: linear-gradient(135deg, #00ff9d, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
         .input-group {
             position: relative;
-            margin: 16px 0;
+            margin: 18px 0;
         }
 
         .input-group i {
@@ -67,82 +80,84 @@
             left: 18px;
             top: 50%;
             transform: translateY(-50%);
-            color: #555;
-            font-size: 16px;
+            color: #5a5a6e;
+            font-size: 15px;
             transition: 0.3s;
+            pointer-events: none;
         }
 
         .input-group input {
             width: 100%;
-            padding: 16px 18px 16px 48px;
-            background: #1a1a2e;
-            border: 1px solid #333;
+            padding: 15px 18px 15px 48px;
+            background: rgba(20, 20, 30, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.08);
             border-radius: 14px;
-            color: white;
+            color: #fff;
             font-size: 15px;
             outline: none;
-            transition: 0.3s;
+            transition: 0.25s;
+            backdrop-filter: blur(5px);
         }
 
         .input-group input:focus {
             border-color: #00ff9d;
-            box-shadow: 0 0 18px #00ff9d22;
+            box-shadow: 0 0 18px rgba(0, 255, 157, 0.2);
         }
 
-        .input-group input:focus+i,
-        .input-group input:focus~i {
+        .input-group input:focus+i {
             color: #00ff9d;
         }
 
         button {
             width: 100%;
-            padding: 16px;
+            padding: 15px;
             margin: 12px 0;
             border: none;
             border-radius: 14px;
-            font-weight: 700;
+            font-weight: 600;
             font-size: 15px;
             cursor: pointer;
-            letter-spacing: 0.5px;
-            transition: 0.3s;
+            letter-spacing: 0.6px;
+            transition: all 0.25s;
             position: relative;
             overflow: hidden;
         }
 
         .btn-primary {
-            background: #00ff9d;
+            background: linear-gradient(135deg, #00ff9d, #00cc7a);
             color: #0a0a0a;
+            font-weight: 700;
         }
         .btn-primary:hover {
-            background: #00e68a;
-            box-shadow: 0 0 30px #00ff9d44;
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 12px 28px rgba(0, 255, 157, 0.35);
         }
         .btn-primary:active {
-            transform: scale(0.98);
+            transform: scale(0.97);
         }
 
         .btn-outline {
             background: transparent;
-            color: #aaa;
-            border: 1px solid #333;
+            color: #b0b0c0;
+            border: 1px solid #2a2a3a;
         }
         .btn-outline:hover {
             border-color: #00ff9d;
             color: #00ff9d;
-            background: #00ff9d0a;
+            background: rgba(0, 255, 157, 0.04);
         }
 
         .btn-ghost {
             background: transparent;
-            color: #888;
+            color: #7a7a8c;
             border: none;
             width: auto;
             display: inline;
-            padding: 8px 16px;
+            padding: 6px 14px;
             font-size: 14px;
             text-decoration: underline;
-            text-underline-offset: 4px;
+            text-underline-offset: 3px;
+            cursor: pointer;
         }
         .btn-ghost:hover {
             color: #00ff9d;
@@ -154,22 +169,27 @@
             min-height: 20px;
             font-weight: 500;
             transition: 0.3s;
+            border-radius: 8px;
+            padding: 8px 12px;
         }
         .status-message.error {
-            color: #ff4d6a;
+            color: #ff5e7a;
+            background: rgba(255, 50, 70, 0.08);
         }
         .status-message.success {
             color: #00ff9d;
+            background: rgba(0, 255, 157, 0.08);
         }
         .status-message.info {
             color: #ffb74d;
+            background: rgba(255, 183, 77, 0.08);
         }
 
         .divider {
             display: flex;
             align-items: center;
             margin: 24px 0;
-            color: #444;
+            color: #4a4a5a;
             font-size: 13px;
         }
         .divider::before,
@@ -177,7 +197,7 @@
             content: '';
             flex: 1;
             height: 1px;
-            background: #222;
+            background: #222232;
         }
         .divider span {
             margin: 0 16px;
@@ -187,118 +207,152 @@
         .dashboard {
             display: flex;
             height: 100%;
+            background: #07070c;
         }
 
         .sidebar {
-            width: 260px;
-            background: #0d0d0d;
-            border-right: 1px solid #1a1a1a;
-            padding: 30px 20px;
+            width: 270px;
+            background: rgba(10, 10, 16, 0.9);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 32px 20px;
             display: flex;
             flex-direction: column;
             gap: 6px;
+            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
         }
 
         .sidebar h2 {
-            color: #00ff9d;
-            font-weight: 700;
-            letter-spacing: 2px;
-            font-size: 20px;
-            margin-bottom: 24px;
-            padding-left: 10px;
+            font-weight: 600;
+            letter-spacing: 1.5px;
+            font-size: 21px;
+            margin-bottom: 28px;
+            padding-left: 14px;
+            background: linear-gradient(135deg, #00ff9d, #00d4ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
         }
 
-        .sidebar .nav-item {
+        .nav-item {
             padding: 13px 16px;
             cursor: pointer;
             border-radius: 12px;
             transition: 0.25s;
             font-weight: 500;
             font-size: 15px;
-            color: #999;
+            color: #9a9aae;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            border: 1px solid transparent;
         }
-        .sidebar .nav-item i {
+        .nav-item i {
             width: 20px;
             text-align: center;
             font-size: 16px;
-            color: #555;
+            color: #6a6a7e;
             transition: 0.25s;
         }
-        .sidebar .nav-item:hover {
-            background: #1a1a1a;
+        .nav-item:hover {
+            background: rgba(255, 255, 255, 0.04);
             color: #ddd;
+            border-color: rgba(255, 255, 255, 0.06);
         }
-        .sidebar .nav-item:hover i {
+        .nav-item:hover i {
             color: #00ff9d;
         }
-        .sidebar .nav-item.active {
-            background: #00ff9d11;
+        .nav-item.active {
+            background: rgba(0, 255, 157, 0.08);
             color: #00ff9d;
-            border: 1px solid #00ff9d22;
+            border-color: rgba(0, 255, 157, 0.25);
+            box-shadow: 0 0 18px rgba(0, 255, 157, 0.1);
         }
-        .sidebar .nav-item.active i {
+        .nav-item.active i {
             color: #00ff9d;
         }
 
-        .sidebar .spacer {
+        .spacer {
             flex: 1;
         }
 
-        .sidebar .logout-btn {
+        .logout-btn {
             padding: 13px 16px;
             cursor: pointer;
             border-radius: 12px;
             transition: 0.25s;
             font-weight: 500;
             font-size: 15px;
-            color: #f66;
+            color: #f47282;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            margin-top: 8px;
         }
-        .sidebar .logout-btn:hover {
-            background: #ff4d6a15;
+        .logout-btn:hover {
+            background: rgba(244, 114, 130, 0.1);
+            border: 1px solid rgba(244, 114, 130, 0.2);
         }
-        .sidebar .logout-btn i {
-            color: #f66;
+        .logout-btn i {
+            color: #f47282;
         }
 
         .main {
             flex: 1;
-            padding: 40px 50px;
+            padding: 45px 55px;
             overflow-y: auto;
-            background: #0a0a0a;
+            background: #0b0b12;
+            scrollbar-width: thin;
+            scrollbar-color: #2a2a3a #0b0b12;
         }
+        .main::-webkit-scrollbar {
+            width: 6px;
+        }
+        .main::-webkit-scrollbar-track {
+            background: #0b0b12;
+        }
+        .main::-webkit-scrollbar-thumb {
+            background: #2a2a3a;
+            border-radius: 6px;
+        }
+
         .main h1 {
-            font-size: 28px;
+            font-size: 30px;
             font-weight: 600;
-            margin-bottom: 16px;
-            color: #fff;
+            margin-bottom: 14px;
+            color: #f0f0f5;
+            letter-spacing: -0.3px;
         }
         .main p {
-            color: #888;
+            color: #9090a0;
             line-height: 1.7;
         }
+
         .card-content {
-            background: #111;
-            border: 1px solid #222;
-            border-radius: 20px;
-            padding: 30px;
-            margin-top: 20px;
+            background: rgba(18, 18, 26, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 22px;
+            padding: 32px;
+            margin-top: 22px;
+            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
+            transition: 0.25s;
         }
+        .card-content:hover {
+            border-color: rgba(0, 255, 157, 0.15);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
+        }
+
         .tag {
             display: inline-block;
-            background: #00ff9d15;
+            background: rgba(0, 255, 157, 0.1);
             color: #00ff9d;
-            padding: 6px 14px;
+            padding: 5px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.5px;
-            border: 1px solid #00ff9d33;
+            letter-spacing: 0.4px;
+            border: 1px solid rgba(0, 255, 157, 0.25);
         }
 
         .spinner {
@@ -319,9 +373,20 @@
         }
 
         button:disabled {
-            opacity: 0.6;
+            opacity: 0.5;
             cursor: not-allowed;
             pointer-events: none;
+        }
+
+        .creator-badge {
+            background: linear-gradient(135deg, #ffb347, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-weight: 700;
+            margin-left: 8px;
+            font-size: 14px;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
@@ -330,21 +395,20 @@
     <div id="root"></div>
 
     <script>
-        // Инициализация Supabase (исправлено: supabase.createClient с маленькой буквы)
         const supabaseClient = supabase.createClient(
             'https://bozcxkjhlhjslperttio.supabase.co',
             'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
         );
 
-        // Глобальное состояние
-        let currentView = 'login'; // 'login' | 'register' | 'dashboard'
+        let currentView = 'login';
         let activeNav = 'panel';
+        let isCreator = false; // флаг создателя
 
         // ========== ОТОБРАЖЕНИЕ ФОРМЫ АВТОРИЗАЦИИ ==========
         function showAuthForm(view = 'login') {
             currentView = view;
             const isLogin = view === 'login';
-            const title = isLogin ? 'SHADOW PANEL' : 'РЕГИСТРАЦИЯ';
+            const title = 'SHADOW PANEL';
             const btnText = isLogin ? 'Войти' : 'Зарегистрироваться';
             const switchText = isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
             const switchAction = isLogin ? "showAuthForm('register')" : "showAuthForm('login')";
@@ -380,12 +444,10 @@
           `;
         }
 
-        // ========== ВАЛИДАЦИЯ EMAIL ==========
         function isValidEmail(email) {
             return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
         }
 
-        // ========== УСТАНОВКА СТАТУСА ==========
         function setStatus(message, type = 'error') {
             const statusEl = document.getElementById('status');
             if (!statusEl) return;
@@ -393,7 +455,6 @@
             statusEl.className = 'status-message ' + type;
         }
 
-        // ========== БЛОКИРОВКА КНОПКИ ==========
         function setLoading(isLoading) {
             const btn = document.getElementById('submitBtn');
             if (!btn) return;
@@ -402,18 +463,15 @@
                 btn.innerHTML = '<span class="spinner"></span> Загрузка...';
             } else {
                 btn.disabled = false;
-                const isLogin = currentView === 'login';
-                btn.textContent = isLogin ? 'Войти' : 'Зарегистрироваться';
+                btn.textContent = currentView === 'login' ? 'Войти' : 'Зарегистрироваться';
             }
         }
 
-        // ========== РЕГИСТРАЦИЯ ==========
         async function handleRegister() {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
             const passwordConfirm = document.getElementById('passwordConfirm')?.value;
 
-            // Валидация
             if (!email || !password) {
                 setStatus('Заполните все поля', 'error');
                 return;
@@ -434,53 +492,38 @@
             setLoading(true);
             setStatus('');
 
-            const { data, error } = await supabaseClient.auth.signUp({
-                email,
-                password,
-            });
-
+            const { data, error } = await supabaseClient.auth.signUp({ email, password });
             setLoading(false);
 
             if (error) {
-                // Обработка типичных ошибок
                 if (error.message.includes('already registered') || error.message.includes('already exists')) {
-                    setStatus('Пользователь с таким email уже существует. Войдите.', 'error');
-                } else if (error.message.includes('password')) {
-                    setStatus('Пароль слишком простой. Используйте минимум 6 символов.', 'error');
+                    setStatus('Пользователь с таким email уже существует.', 'error');
                 } else {
                     setStatus('Ошибка: ' + error.message, 'error');
                 }
                 return;
             }
 
-            // Проверяем, нужно ли подтверждение email
             if (data?.user?.identities?.length === 0) {
-                setStatus('Пользователь с таким email уже существует. Войдите.', 'error');
+                setStatus('Пользователь уже существует. Войдите.', 'error');
                 return;
             }
 
             if (data?.session === null) {
-                // Email confirmation required
-                setStatus('✅ Регистрация успешна! Проверьте почту для подтверждения email.', 'success');
-                // Очищаем поля
+                setStatus('Регистрация успешна! Проверьте почту для подтверждения.', 'success');
                 document.getElementById('email').value = '';
                 document.getElementById('password').value = '';
-                if (document.getElementById('passwordConfirm')) {
-                    document.getElementById('passwordConfirm').value = '';
-                }
-                // Через 3 секунды переключаем на вход
+                if (document.getElementById('passwordConfirm')) document.getElementById('passwordConfirm').value = '';
                 setTimeout(() => {
                     showAuthForm('login');
-                    setStatus('Теперь вы можете войти после подтверждения email.', 'info');
+                    setStatus('Теперь можно войти после подтверждения email.', 'info');
                 }, 3000);
             } else {
-                // Автоматический вход (если подтверждение не требуется)
-                setStatus('✅ Регистрация успешна! Выполняется вход...', 'success');
+                setStatus('Регистрация успешна! Выполняется вход...', 'success');
                 setTimeout(() => showDashboard(), 800);
             }
         }
 
-        // ========== ВХОД ==========
         async function handleLogin() {
             const email = document.getElementById('email').value.trim();
             const password = document.getElementById('password').value;
@@ -497,16 +540,11 @@
             setLoading(true);
             setStatus('');
 
-            const { data, error } = await supabaseClient.auth.signInWithPassword({
-                email,
-                password,
-            });
-
+            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
             setLoading(false);
 
             if (error) {
-                if (error.message.includes('Invalid login credentials') || error.message.includes(
-                        'Invalid email or password')) {
+                if (error.message.includes('Invalid login credentials')) {
                     setStatus('Неверный email или пароль', 'error');
                 } else if (error.message.includes('Email not confirmed')) {
                     setStatus('Email не подтверждён. Проверьте почту.', 'error');
@@ -517,25 +555,29 @@
             }
 
             if (data?.session) {
-                setStatus('✅ Вход выполнен!', 'success');
+                setStatus('Вход выполнен!', 'success');
                 setTimeout(() => showDashboard(), 500);
             } else {
-                setStatus('Не удалось войти. Попробуйте позже.', 'error');
+                setStatus('Не удалось войти.', 'error');
             }
         }
 
         // ========== ДЭШБОРД ==========
-        function showDashboard() {
+        async function showDashboard() {
             currentView = 'dashboard';
+            // Определяем, является ли пользователь создателем
+            const { data: { user } } = await supabaseClient.auth.getUser();
+            isCreator = (user?.email === 'kilersosiska130@gmail.com');
+
             document.getElementById('root').innerHTML = `
             <div class="dashboard">
               <div class="sidebar">
-                <h2>🔮 SHADOW</h2>
-                <div class="nav-item ${activeNav === 'builder' ? 'active' : ''}" onclick="showBuilder()">
-                  <i class="fas fa-cubes"></i> Builder
-                </div>
+                <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
                 <div class="nav-item ${activeNav === 'panel' ? 'active' : ''}" onclick="showPanel()">
                   <i class="fas fa-tachometer-alt"></i> Панель
+                </div>
+                <div class="nav-item ${activeNav === 'builder' ? 'active' : ''}" onclick="showBuilder()">
+                  <i class="fas fa-cubes"></i> Builder
                 </div>
                 <div class="nav-item ${activeNav === 'subs' ? 'active' : ''}" onclick="showSubs()">
                   <i class="fas fa-crown"></i> Подписки
@@ -553,25 +595,26 @@
               </div>
             </div>
           `;
+            updateActiveNav(activeNav);
         }
 
         function getPanelContent() {
             return `
-            <h1>👋 Панель управления</h1>
+            <h1>Панель управления</h1>
             <p>Добро пожаловать в <span class="tag">Shadow Panel</span></p>
             <div class="card-content">
               <p><i class="fas fa-check-circle" style="color:#00ff9d;"></i> Вы успешно авторизованы</p>
-              <p style="margin-top:10px;">Выберите раздел в боковом меню, чтобы начать работу.</p>
+              <p style="margin-top:10px;">Выберите раздел в меню слева, чтобы продолжить.</p>
+              ${isCreator ? '<p style="margin-top:12px; color:#ffb347;"><i class="fas fa-star"></i> Статус создателя активен — все модули разблокированы.</p>' : ''}
             </div>
           `;
         }
 
         function updateActiveNav(nav) {
             activeNav = nav;
-            // Обновляем классы active в сайдбаре
             document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
             const items = document.querySelectorAll('.nav-item');
-            const navMap = { builder: 0, panel: 1, subs: 2, settings: 3 };
+            const navMap = { panel: 0, builder: 1, subs: 2, settings: 3 };
             if (items[navMap[nav]]) {
                 items[navMap[nav]].classList.add('active');
             }
@@ -579,52 +622,82 @@
 
         function showBuilder() {
             updateActiveNav('builder');
-            document.getElementById('content').innerHTML = `
-            <h1>🧱 Builder</h1>
-            <div class="card-content">
-              <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Этот раздел доступен по подписке.</p>
-              <p style="margin-top:12px;">Перейдите в раздел <strong>Подписки</strong>, чтобы активировать доступ.</p>
-              <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="showSubs()">
-                <i class="fas fa-crown"></i> Перейти к подпискам
-              </button>
-            </div>
-          `;
+            const contentDiv = document.getElementById('content');
+            if (!contentDiv) return;
+
+            if (isCreator) {
+                contentDiv.innerHTML = `
+                <h1>Builder</h1>
+                <div class="card-content">
+                  <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Доступ открыт (создатель)</p>
+                  <p style="margin-top:12px;">Инструменты разработчика активны. Вы можете настраивать модули системы.</p>
+                  <div style="margin-top:20px; display:flex; gap:15px; flex-wrap:wrap;">
+                    <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
+                      <i class="fas fa-code" style="color:#00ff9d; font-size:20px;"></i>
+                      <p style="margin-top:8px; font-weight:600;">Редактор</p>
+                    </div>
+                    <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
+                      <i class="fas fa-database" style="color:#00ff9d; font-size:20px;"></i>
+                      <p style="margin-top:8px; font-weight:600;">Данные</p>
+                    </div>
+                  </div>
+                </div>
+              `;
+            } else {
+                contentDiv.innerHTML = `
+                <h1>Builder</h1>
+                <div class="card-content">
+                  <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Этот раздел доступен по подписке.</p>
+                  <p style="margin-top:12px;">Перейдите в <strong>Подписки</strong>, чтобы активировать доступ.</p>
+                  <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="showSubs()">
+                    <i class="fas fa-crown"></i> Перейти к подпискам
+                  </button>
+                </div>
+              `;
+            }
         }
 
         function showPanel() {
             updateActiveNav('panel');
-            document.getElementById('content').innerHTML = getPanelContent();
+            const contentDiv = document.getElementById('content');
+            if (contentDiv) contentDiv.innerHTML = getPanelContent();
         }
 
         function showSubs() {
             updateActiveNav('subs');
-            document.getElementById('content').innerHTML = `
-            <h1>💎 Подписки</h1>
-            <div class="card-content">
-              <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
-              <p style="margin-top:8px; color:#888;">Полный доступ к Builder и всем инструментам.</p>
-              <button class="btn-primary" style="width:auto; margin-top:16px; padding:12px 28px;" disabled>
-                <i class="fas fa-credit-card"></i> Оплатить (скоро)
-              </button>
-              <p style="margin-top:12px; font-size:13px; color:#555;">Платёжная система в разработке.</p>
-            </div>
-          `;
+            const contentDiv = document.getElementById('content');
+            if (contentDiv) {
+                contentDiv.innerHTML = `
+                <h1>Подписки</h1>
+                <div class="card-content">
+                  <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
+                  <p style="margin-top:8px; color:#9090a0;">Полный доступ к Builder и всем инструментам.</p>
+                  <button class="btn-primary" style="width:auto; margin-top:16px; padding:12px 28px;" disabled>
+                    <i class="fas fa-credit-card"></i> Оплатить (скоро)
+                  </button>
+                  <p style="margin-top:12px; font-size:13px; color:#5a5a6e;">Платёжная система в разработке.</p>
+                  ${isCreator ? '<p style="margin-top:12px; color:#ffb347;">Вы создатель — подписка не требуется.</p>' : ''}
+                </div>
+              `;
+            }
         }
 
         function showSettings() {
             updateActiveNav('settings');
-            document.getElementById('content').innerHTML = `
-            <h1>⚙️ Настройки</h1>
-            <div class="card-content">
-              <p>Настройки аккаунта и безопасности.</p>
-              <p style="margin-top:12px; color:#888;">Email: <strong id="userEmail">загрузка...</strong></p>
-              <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="handleLogout()">
-                <i class="fas fa-right-from-bracket"></i> Выйти из аккаунта
-              </button>
-            </div>
-          `;
-            // Загружаем email пользователя
-            loadUserEmail();
+            const contentDiv = document.getElementById('content');
+            if (contentDiv) {
+                contentDiv.innerHTML = `
+                <h1>Настройки</h1>
+                <div class="card-content">
+                  <p>Управление аккаунтом и безопасность.</p>
+                  <p style="margin-top:12px; color:#9090a0;">Email: <strong id="userEmail">загрузка...</strong></p>
+                  <button class="btn-outline" style="width:auto; margin-top:20px; padding:12px 24px;" onclick="handleLogout()">
+                    <i class="fas fa-right-from-bracket"></i> Выйти из аккаунта
+                  </button>
+                </div>
+              `;
+                loadUserEmail();
+            }
         }
 
         async function loadUserEmail() {
@@ -637,31 +710,27 @@
             }
         }
 
-        // ========== ВЫХОД ==========
         async function handleLogout() {
-            const { error } = await supabaseClient.auth.signOut();
-            if (error) {
-                console.error('Ошибка выхода:', error);
-            }
-            // Принудительно показываем форму входа
+            await supabaseClient.auth.signOut();
             currentView = 'login';
             activeNav = 'panel';
+            isCreator = false;
             showAuthForm('login');
         }
 
-        // ========== ИНИЦИАЛИЗАЦИЯ ПРИ ЗАГРУЗКЕ ==========
+        // ========== ИНИЦИАЛИЗАЦИЯ ==========
         window.onload = async () => {
             try {
                 const { data: { session } } = await supabaseClient.auth.getSession();
                 if (session) {
-                    // Проверяем, что пользователь всё ещё валиден
                     const { data: { user } } = await supabaseClient.auth.getUser();
                     if (user) {
+                        // Установим isCreator до рендера дашборда
+                        isCreator = (user.email === 'kilersosiska130@gmail.com');
                         showDashboard();
                         return;
                     }
                 }
-                // Нет сессии — показываем вход
                 showAuthForm('login');
             } catch (e) {
                 console.error('Ошибка инициализации:', e);
@@ -669,15 +738,19 @@
             }
         };
 
-        // ========== ОТСЛЕЖИВАНИЕ ИЗМЕНЕНИЙ АВТОРИЗАЦИИ ==========
         supabaseClient.auth.onAuthStateChange((event, session) => {
             if (event === 'SIGNED_OUT') {
                 currentView = 'login';
                 activeNav = 'panel';
+                isCreator = false;
                 showAuthForm('login');
             } else if (event === 'SIGNED_IN' && session) {
                 if (currentView !== 'dashboard') {
-                    showDashboard();
+                    // обновим isCreator перед показом
+                    supabaseClient.auth.getUser().then(({ data: { user } }) => {
+                        isCreator = (user?.email === 'kilersosiska130@gmail.com');
+                        showDashboard();
+                    });
                 }
             }
         });
