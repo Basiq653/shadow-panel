@@ -155,6 +155,13 @@
         .pinned-notification {
             background: rgba(0,255,157,0.08); border-left: 3px solid #00ff9d;
         }
+        .shell-output {
+            background:#000; color:#0f0; padding:12px; border-radius:8px; font-family:monospace;
+            min-height:200px; max-height:400px; overflow-y:auto; white-space:pre-wrap;
+        }
+        .shell-input {
+            width:100%; margin-top:8px; padding:8px; background:#12121f; border:1px solid #2a2a3a; border-radius:8px; color:#0f0; font-family:monospace;
+        }
     </style>
 </head>
 <body>
@@ -168,39 +175,38 @@
     const supabaseClient = supabase.createClient(
         'https://bozcxkjhlhjslperttio.supabase.co',
         'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg',
-        {
-            auth: {
-                flowType: 'implicit',
-                detectSessionInUrl: true,
-                persistSession: true,
-            }
-        }
+        { auth: { flowType: 'implicit', detectSessionInUrl: true, persistSession: true } }
     );
 
     let currentView = 'login';
     let activeNav = 'panel';
     let isCreator = false;
     let hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
-    // История уведомлений для вкладки "Уведомления"
     let notificationHistory = JSON.parse(localStorage.getItem('laprpanel_notifications') || '[]');
-    // Закреплённые данные покупки
     let pinnedHost = localStorage.getItem('laprpanel_pinned_host') || null;
     let pinnedPassword = localStorage.getItem('laprpanel_pinned_password') || null;
+
+    // Уникальные данные устройств (одинаковые в панели и в функциях)
+    const devices = [ 
+        {id:'A7F3C2',name:'DESKTOP-A1B2C3',os:'Windows 10 Pro',ip:'45.132.18.77',country:'Russia',status:'online',
+         cpu:'Intel Core i7-10700K', ram:'32 GB', gpu:'NVIDIA GeForce RTX 3070', disks:'SSD 1TB + HDD 2TB'},
+        {id:'D4E1B9',name:'LAPTOP-X7Y8Z9',os:'Windows 11',ip:'91.200.12.44',country:'Kazakhstan',status:'offline',
+         cpu:'AMD Ryzen 5 5600H', ram:'16 GB', gpu:'AMD Radeon RX 6600M', disks:'NVMe 512 GB'},
+        {id:'F0C8A2',name:'SERVER-DB01',os:'Ubuntu 22.04',ip:'185.45.67.11',country:'Netherlands',status:'online',
+         cpu:'Intel Xeon E5-2690 v4', ram:'64 GB', gpu:'Matrox G200eH3', disks:'RAID 10 8TB'},
+        {id:'1B5E7D',name:'OFFICE-PC',os:'Windows 10 LTSC',ip:'78.56.130.90',country:'Germany',status:'online',
+         cpu:'Intel Core i5-10400', ram:'8 GB', gpu:'Intel UHD Graphics 630', disks:'SSD 256 GB'},
+        {id:'3A9F6C',name:'HOME-PC',os:'macOS Monterey',ip:'123.45.67.89',country:'USA',status:'offline',
+         cpu:'Apple M1', ram:'8 GB', gpu:'Apple M1 7-core', disks:'SSD 256 GB'}
+    ];
 
     function saveNotificationHistory() {
         localStorage.setItem('laprpanel_notifications', JSON.stringify(notificationHistory));
     }
-
     function addNotification(message, isPinned = false) {
-        notificationHistory.unshift({
-            message,
-            time: new Date().toLocaleString(),
-            pinned: isPinned
-        });
-        // Ограничим историю 50 записями
+        notificationHistory.unshift({ message, time: new Date().toLocaleString(), pinned: isPinned });
         if (notificationHistory.length > 50) notificationHistory.pop();
         saveNotificationHistory();
-        // Если активна вкладка уведомлений, обновим её
         if (activeNav === 'notify') showNotify();
     }
 
@@ -273,13 +279,6 @@
             return `<h1>Панель управления</h1><p>Нет подключённых устройств</p>
             <div class="card-content"><p>У вас нет активных клиентов. Приобретите подписку для доступа к Builder.</p></div>`;
         }
-        const devices=[ 
-            {id:'A7F3C2',name:'DESKTOP-A1B2C3',os:'Windows 10 Pro',ip:'45.132.18.77',country:'Russia',status:'online'},
-            {id:'D4E1B9',name:'LAPTOP-X7Y8Z9',os:'Windows 11',ip:'91.200.12.44',country:'Kazakhstan',status:'offline'},
-            {id:'F0C8A2',name:'SERVER-DB01',os:'Ubuntu 22.04',ip:'185.45.67.11',country:'Netherlands',status:'online'},
-            {id:'1B5E7D',name:'OFFICE-PC',os:'Windows 10 LTSC',ip:'78.56.130.90',country:'Germany',status:'online'},
-            {id:'3A9F6C',name:'HOME-PC',os:'macOS Monterey',ip:'123.45.67.89',country:'USA',status:'offline'}
-        ];
         return `<h1>Панель управления</h1><p>Подключённые устройства <span class="tag">${devices.length} активных</span></p>
         <div class="card-content"><table class="device-table"><thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th><th></th></tr></thead><tbody>
         ${devices.map(d=>`<tr>
@@ -289,9 +288,9 @@
                 <div id="menu-${d.id}" class="action-menu">
                     <div onclick="showScreenViewer('${d.name}')"><i class="fas fa-desktop"></i> Экран</div>
                     <div onclick="startStiller('${d.name}','${d.id}')"><i class="fas fa-file-download"></i> Стилер</div>
-                    <div onclick="showInfoModal('${d.name}')"><i class="fas fa-info-circle"></i> Информация</div>
-                    <div onclick="showProcessList('${d.name}')"><i class="fas fa-tasks"></i> Процессы</div>
-                    <div onclick="showShell('${d.name}')"><i class="fas fa-terminal"></i> Командная строка</div>
+                    <div onclick="showInfoModal('${d.id}')"><i class="fas fa-info-circle"></i> Информация</div>
+                    <div onclick="showProcessList('${d.id}')"><i class="fas fa-tasks"></i> Процессы</div>
+                    <div onclick="showShell('${d.id}')"><i class="fas fa-terminal"></i> Командная строка</div>
                     <div onclick="alert('Звук для ${d.name}')"><i class="fas fa-volume-up"></i> Звук</div>
                     <div onclick="alert('Кейлоггер для ${d.name}')"><i class="fas fa-keyboard"></i> Кейлоггер</div>
                     <div onclick="alert('Файлы ${d.name}')"><i class="fas fa-folder-open"></i> Файлы</div>
@@ -379,19 +378,8 @@
         document.getElementById('content').innerHTML = html;
     }
 
-    window.clearNotifications = function() {
-        notificationHistory = [];
-        saveNotificationHistory();
-        showNotify();
-    };
-
-    window.clearPinned = function() {
-        pinnedHost = null;
-        pinnedPassword = null;
-        localStorage.removeItem('laprpanel_pinned_host');
-        localStorage.removeItem('laprpanel_pinned_password');
-        showNotify();
-    };
+    window.clearNotifications = function() { notificationHistory = []; saveNotificationHistory(); showNotify(); };
+    window.clearPinned = function() { pinnedHost = null; pinnedPassword = null; localStorage.removeItem('laprpanel_pinned_host'); localStorage.removeItem('laprpanel_pinned_password'); showNotify(); };
 
     function showCommunity(){ updateActiveNav('community'); document.getElementById('content').innerHTML='<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>'; }
     
@@ -407,12 +395,7 @@
         </div>`;
     }
 
-    window.resetPurchase = function() {
-        localStorage.removeItem('laprpanel_purchased');
-        hasPurchased = false;
-        showSubs();
-    };
-
+    window.resetPurchase = function() { localStorage.removeItem('laprpanel_purchased'); hasPurchased = false; showSubs(); };
     function showSettings(){
         updateActiveNav('settings');
         document.getElementById('content').innerHTML='<h1>Настройки</h1><div class="card-content"><p>Email: <strong id="userEmail">загрузка...</strong></p><button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button></div>';
@@ -421,7 +404,6 @@
 
     async function handleLogout(){ await supabaseClient.auth.signOut(); currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
 
-    // ========== Модальное окно покупки ==========
     window.openPurchaseModal = function() {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
@@ -445,33 +427,24 @@
         closeModal();
         hasPurchased = true;
         localStorage.setItem('laprpanel_purchased', 'true');
-        const randomDomain = Math.random().toString(36).substring(2, 6) + '.' + 
-                             Math.random().toString(36).substring(2, 6) + '.' + 
-                             Math.random().toString(36).substring(2, 6);
+        const randomDomain = Math.random().toString(36).substring(2, 6) + '.' + Math.random().toString(36).substring(2, 6) + '.' + Math.random().toString(36).substring(2, 6);
         const port = Math.floor(Math.random() * 60000) + 1024;
         pinnedHost = `larppanel.${randomDomain}:${port}`;
         pinnedPassword = 'larp' + Math.random().toString(36).substring(2, 8);
         localStorage.setItem('laprpanel_pinned_host', pinnedHost);
         localStorage.setItem('laprpanel_pinned_password', pinnedPassword);
-        
         addNotification(`Покупка успешна! Хост: ${pinnedHost}, Пароль: ${pinnedPassword}`, true);
-        
         const container = document.getElementById('notifications-container');
-        const notif = document.createElement('div');
-        notif.className = 'notification-item';
-        notif.innerHTML = `
-            <div class="progress-text" style="color:#00ff9d;">Покупка успешна!</div>
-            <div style="font-size:14px; color:#ccc;">
-                <div>Хост: ${pinnedHost}</div>
-                <div>Пароль: ${pinnedPassword}</div>
-            </div>
-            <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
+        const notif = document.createElement('div'); notif.className = 'notification-item';
+        notif.innerHTML = `<div class="progress-text" style="color:#00ff9d;">Покупка успешна!</div><div style="font-size:14px; color:#ccc;"><div>Хост: ${pinnedHost}</div><div>Пароль: ${pinnedPassword}</div></div><span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
         container.appendChild(notif);
         setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
         showSubs();
     };
 
-    // ========== Функции устройств ==========
+    // ========== ФУНКЦИИ УСТРОЙСТВ ==========
+    function getDeviceById(id) { return devices.find(d => d.id === id); }
+
     window.showScreenViewer = function(deviceName) {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
@@ -487,59 +460,97 @@
         addNotification(`Запущен просмотр экрана: ${deviceName}`);
     };
 
-    window.showInfoModal = function(deviceName) {
+    window.showInfoModal = function(deviceId) {
+        const device = getDeviceById(deviceId);
+        if (!device) return;
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
         content.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="color:#00ff9d;">Информация о системе - ${deviceName}</h3>
+                <h3 style="color:#00ff9d;">Информация о системе - ${device.name}</h3>
                 <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
             </div>
             <div style="background:#12121f; padding:16px; border-radius:12px;">
-                <p><strong>ОС:</strong> Windows 10 Pro 22H2</p>
-                <p><strong>CPU:</strong> Intel Core i7-10700K</p>
-                <p><strong>RAM:</strong> 16 GB</p>
-                <p><strong>GPU:</strong> NVIDIA GeForce RTX 3060</p>
-                <p><strong>IP:</strong> 192.168.1.15</p>
+                <p><strong>ОС:</strong> ${device.os}</p>
+                <p><strong>CPU:</strong> ${device.cpu}</p>
+                <p><strong>RAM:</strong> ${device.ram}</p>
+                <p><strong>GPU:</strong> ${device.gpu}</p>
+                <p><strong>Диски:</strong> ${device.disks}</p>
+                <p><strong>IP:</strong> ${device.ip}</p>
             </div>`;
         overlay.classList.add('open');
-        addNotification(`Открыта информация о системе: ${deviceName}`);
+        addNotification(`Открыта информация о системе: ${device.name}`);
     };
 
-    window.showProcessList = function(deviceName) {
+    window.showProcessList = function(deviceId) {
+        const device = getDeviceById(deviceId);
+        if (!device) return;
+        const processes = [
+            { name: 'System Idle Process', pid: 0 },
+            { name: 'System', pid: 4 },
+            { name: 'smss.exe', pid: 312 },
+            { name: 'csrss.exe', pid: 420 },
+            { name: 'wininit.exe', pid: 508 },
+            { name: 'services.exe', pid: 612 },
+            { name: 'lsass.exe', pid: 688 },
+            { name: 'svchost.exe', pid: 820 },
+            { name: 'explorer.exe', pid: 1234 },
+            { name: 'chrome.exe', pid: 5678 },
+            { name: 'discord.exe', pid: 9012 },
+            { name: 'steam.exe', pid: 3456 },
+            { name: 'notepad.exe', pid: 7890 },
+            { name: 'Taskmgr.exe', pid: 2345 }
+        ];
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
         content.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="color:#00ff9d;">Список процессов - ${deviceName}</h3>
+                <h3 style="color:#00ff9d;">Список процессов - ${device.name}</h3>
                 <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
             </div>
             <div style="background:#12121f; padding:16px; border-radius:12px; max-height:400px; overflow-y:auto;">
-                <p>explorer.exe (PID: 1234)</p>
-                <p>chrome.exe (PID: 5678)</p>
-                <p>discord.exe (PID: 9012)</p>
-                <p>steam.exe (PID: 3456)</p>
-                <p>notepad.exe (PID: 7890)</p>
+                ${processes.map(p => `<p>${p.name} (PID: ${p.pid})</p>`).join('')}
             </div>`;
         overlay.classList.add('open');
-        addNotification(`Открыт список процессов: ${deviceName}`);
+        addNotification(`Открыт список процессов: ${device.name}`);
     };
 
-    window.showShell = function(deviceName) {
+    window.showShell = function(deviceId) {
+        const device = getDeviceById(deviceId);
+        if (!device) return;
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
         content.innerHTML = `
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
-                <h3 style="color:#00ff9d;">Командная строка - ${deviceName}</h3>
+                <h3 style="color:#00ff9d;">Командная строка - ${device.name}</h3>
                 <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
             </div>
-            <div style="background:#000; color:#0f0; padding:12px; border-radius:8px; font-family:monospace;">
-                Microsoft Windows [Version 10.0.19045.2486]<br>
-                (c) Microsoft Corporation. All rights reserved.<br><br>
-                C:\\Users\\User> _
-            </div>`;
+            <div class="shell-output" id="shell-output-${deviceId}">Microsoft Windows [Version ${device.os.includes('11') ? '10.0.22000.795' : '10.0.19045.2486'}]<br>(c) Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\${device.name.split('-')[0]}> _</div>
+            <input class="shell-input" type="text" id="shell-input-${deviceId}" placeholder="Введите команду..." onkeydown="handleShellCommand(event, '${deviceId}')">`;
         overlay.classList.add('open');
-        addNotification(`Открыта командная строка: ${deviceName}`);
+        addNotification(`Открыта командная строка: ${device.name}`);
+    };
+
+    window.handleShellCommand = function(event, deviceId) {
+        if (event.key !== 'Enter') return;
+        const input = document.getElementById(`shell-input-${deviceId}`);
+        const output = document.getElementById(`shell-output-${deviceId}`);
+        if (!input || !output) return;
+        const command = input.value.trim();
+        if (!command) return;
+        // Добавляем команду в вывод
+        output.innerHTML += `<br>C:\\Users\\User> ${command}`;
+        // Простейшая эмуляция
+        switch(command.toLowerCase()) {
+            case 'help': output.innerHTML += '<br>Доступные команды: help, whoami, dir, ipconfig, cls'; break;
+            case 'whoami': output.innerHTML += '<br>user'; break;
+            case 'dir': output.innerHTML += '<br> Том в устройстве C имеет метку Windows<br> Серийный номер тома: 1A2B-3C4D<br><br> Содержимое папки C:\\Users\\User<br><br>2025-06-20  10:23    &lt;DIR&gt;          .<br>2025-06-20  10:23    &lt;DIR&gt;          ..<br>2025-05-15  14:02             1 234 secret.txt<br>'; break;
+            case 'ipconfig': output.innerHTML += '<br>Адаптер Ethernet Ethernet0:<br>   IPv4-адрес. . . . . . . . . . . . : 192.168.1.15<br>   Основной шлюз . . . . . . . . . . : 192.168.1.1'; break;
+            case 'cls': output.innerHTML = 'Microsoft Windows [Version 10.0.19045.2486]<br>(c) Microsoft Corporation. All rights reserved.<br><br>C:\\Users\\User> _'; break;
+            default: output.innerHTML += `<br>Неизвестная команда: ${command}`;
+        }
+        output.scrollTop = output.scrollHeight;
+        input.value = '';
     };
 
     window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
@@ -548,59 +559,32 @@
     window.startStiller = function(deviceName, deviceId) {
         const container = document.getElementById('notifications-container');
         const notifId = `stiller-${deviceId}-${Date.now()}`;
-        const notif = document.createElement('div');
-        notif.className = 'notification-item';
-        notif.id = notifId;
-        notif.innerHTML = `
-            <div class="progress-text">Стиллер запущен на ${deviceName}...</div>
-            <div class="stiller-status" style="font-size:12px; color:#aaa;">Идёт сбор данных (0%)</div>
-            <button class="download-btn">Скачать архив</button>
-            <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
+        const notif = document.createElement('div'); notif.className = 'notification-item'; notif.id = notifId;
+        notif.innerHTML = `<div class="progress-text">Стиллер запущен на ${deviceName}...</div><div class="stiller-status" style="font-size:12px; color:#aaa;">Идёт сбор данных (0%)</div><button class="download-btn">Скачать архив</button><span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
         container.appendChild(notif);
-
         addNotification(`Запущен стиллер: ${deviceName}`);
-
         let progress = 0;
         const interval = setInterval(() => {
-            progress += 5;
-            if (progress > 100) progress = 100;
+            progress += 5; if (progress > 100) progress = 100;
             const statusEl = notif.querySelector('.stiller-status');
             if (statusEl) statusEl.textContent = `Идёт сбор данных (${progress}%)`;
             if (progress >= 100) {
                 clearInterval(interval);
                 const btn = notif.querySelector('.download-btn');
-                if (btn) {
-                    btn.style.display = 'inline-block';
-                    btn.onclick = () => downloadStiller(deviceName, notifId);
-                }
-                const status = notif.querySelector('.stiller-status');
-                if (status) status.textContent = 'Сбор завершён';
+                if (btn) { btn.style.display = 'inline-block'; btn.onclick = () => downloadStiller(deviceName, notifId); }
+                const status = notif.querySelector('.stiller-status'); if (status) status.textContent = 'Сбор завершён';
             }
         }, 750);
     };
 
     async function downloadStiller(deviceName, notifId) {
         const zip = new JSZip();
-        const fakeData = `Stiller Report for ${deviceName}\n` +
-            "==========================\n" +
-            "URL: https://example.com/login\n" +
-            "Login: user@example.com\n" +
-            "Password: P@ssw0rd123\n\n" +
-            "Cookies: session=abc123; token=xyz789\n\n" +
-            "Browser: Chrome 115.0.5790.110\n" +
-            "Saved CC: 4111-XXXX-XXXX-1234 Exp:12/25 CVV:123\n";
+        const fakeData = `Stiller Report for ${deviceName}\n==========================\nURL: https://example.com/login\nLogin: user@example.com\nPassword: P@ssw0rd123\n\nCookies: session=abc123; token=xyz789\n\nBrowser: Chrome 115.0.5790.110\nSaved CC: 4111-XXXX-XXXX-1234 Exp:12/25 CVV:123\n`;
         zip.file("stolen_data.txt", fakeData);
         const blob = await zip.generateAsync({ type: "blob" });
         const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = `stiller_${deviceName.replace(/\s/g,'_')}.zip`;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
-        const notif = document.getElementById(notifId);
-        if (notif) notif.remove();
+        const a = document.createElement('a'); a.href = url; a.download = `stiller_${deviceName.replace(/\s/g,'_')}.zip`; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        const notif = document.getElementById(notifId); if (notif) notif.remove();
         addNotification(`Скачан архив стиллера: ${deviceName}`);
     }
 
@@ -612,9 +596,7 @@
             pinnedHost = localStorage.getItem('laprpanel_pinned_host');
             pinnedPassword = localStorage.getItem('laprpanel_pinned_password');
             showDashboard();
-        } else {
-            showAuthForm('login');
-        }
+        } else { showAuthForm('login'); }
     };
     supabaseClient.auth.onAuthStateChange((event,session)=>{
         if (event==='SIGNED_OUT') { currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
