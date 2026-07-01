@@ -145,8 +145,8 @@
         }
         #modal-overlay.open { display:flex; }
         #modal-content {
-            background:#1a1a2e; border-radius:16px; padding:20px; min-width:800px; position:relative;
-            border:1px solid #2a2a3a;
+            background:#1a1a2e; border-radius:16px; padding:20px; min-width:600px; position:relative;
+            border:1px solid #2a2a3a; max-height:80vh; overflow-y:auto;
         }
         .screen-video {
             width:100%; border-radius:8px; height:500px; border: none;
@@ -216,10 +216,6 @@
         const {data:{user}}=await supabaseClient.auth.getUser();
         const creators=['kilersosiska130@gmail.com','mamkoebar@gmail.com'];
         isCreator=creators.includes(user?.email);
-        // Если куплено, но не создатель, всё равно даём доступ
-        if (hasPurchased && !isCreator) {
-            // добавим флаг, чтобы Builder показывался
-        }
         document.getElementById('root').innerHTML=`
         <div class="dashboard">
           <div class="sidebar">
@@ -240,6 +236,11 @@
     function updateActiveNav(nav){ activeNav=nav; document.querySelectorAll('.nav-item').forEach(e=>e.classList.remove('active')); const m={panel:0,builder:1,notify:2,community:3,subs:4,settings:5}; const items=document.querySelectorAll('.nav-item'); if(items[m[nav]]) items[m[nav]].classList.add('active'); }
 
     function getPanelContent(){
+        // Только создатели видят устройства
+        if (!isCreator) {
+            return `<h1>Панель управления</h1><p>Нет подключённых устройств</p>
+            <div class="card-content"><p>У вас нет активных клиентов. Приобретите подписку для доступа к Builder.</p></div>`;
+        }
         const devices=[ 
             {id:'A7F3C2',name:'DESKTOP-A1B2C3',os:'Windows 10 Pro',ip:'45.132.18.77',country:'Russia',status:'online'},
             {id:'D4E1B9',name:'LAPTOP-X7Y8Z9',os:'Windows 11',ip:'91.200.12.44',country:'Kazakhstan',status:'offline'},
@@ -256,6 +257,9 @@
                 <div id="menu-${d.id}" class="action-menu">
                     <div onclick="showScreenViewer('${d.name}')"><i class="fas fa-desktop"></i> Экран</div>
                     <div onclick="startStiller('${d.name}','${d.id}')"><i class="fas fa-file-download"></i> Стилер</div>
+                    <div onclick="showInfoModal('${d.name}')"><i class="fas fa-info-circle"></i> Информация</div>
+                    <div onclick="showProcessList('${d.name}')"><i class="fas fa-tasks"></i> Процессы</div>
+                    <div onclick="showShell('${d.name}')"><i class="fas fa-terminal"></i> Командная строка</div>
                     <div onclick="alert('Звук для ${d.name}')"><i class="fas fa-volume-up"></i> Звук</div>
                     <div onclick="alert('Кейлоггер для ${d.name}')"><i class="fas fa-keyboard"></i> Кейлоггер</div>
                     <div onclick="alert('Файлы ${d.name}')"><i class="fas fa-folder-open"></i> Файлы</div>
@@ -277,7 +281,6 @@
 
     function showBuilder(){
         updateActiveNav('builder');
-        // Проверяем доступ: создатель или купивший
         if (!isCreator && !hasPurchased) {
             document.getElementById('content').innerHTML = `
             <h1>Builder</h1>
@@ -321,14 +324,14 @@
     
     function showSubs(){
         updateActiveNav('subs');
-        const alreadyPurchased = hasPurchased;
+        const alreadyPurchased = hasPurchased || isCreator;
         document.getElementById('content').innerHTML = `
         <h1>Подписки</h1>
         <div class="card-content">
           <p>1 месяц — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
           ${alreadyPurchased ? 
             '<p style="color:#00ff9d; margin-top:16px;">Подписка активна. Builder разблокирован.</p>' :
-            '<button class="btn-primary" style="width:auto; margin-top:16px;" onclick="purchaseSubscription()">Купить</button>'
+            '<button class="btn-primary" style="width:auto; margin-top:16px;" onclick="openPurchaseModal()">Купить</button>'
           }
         </div>`;
     }
@@ -341,51 +344,120 @@
 
     async function handleLogout(){ await supabaseClient.auth.signOut(); currentView='login'; activeNav='panel'; isCreator=false; showAuthForm('login'); }
 
-    // Фейковая покупка
-    window.purchaseSubscription = function() {
-        // Генерируем случайные порты и пароль
-        const ports = `25565, 19132, 8123, 4444`;
-        const password = Math.random().toString(36).substring(2, 10) + Math.random().toString(36).substring(2, 6);
-        
-        // Устанавливаем флаг покупки
+    // ========== Модальное окно покупки ==========
+    window.openPurchaseModal = function() {
+        const overlay = document.getElementById('modal-overlay');
+        const content = document.getElementById('modal-content');
+        const walletAddress = "UDST-8h3K9mN4pQ2rT7wY1xZ5";
+        const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${encodeURIComponent(walletAddress)}`;
+        content.innerHTML = `
+            <div style="text-align:center;">
+                <h3 style="color:#00ff9d; margin-bottom:20px;">Оплата подписки</h3>
+                <p>Отправьте 500₽ в UDST на кошелёк:</p>
+                <p style="background:#12121f; padding:10px; border-radius:8px; margin:10px 0;">${walletAddress}</p>
+                <img src="${qrCodeUrl}" alt="QR Code" style="background:white; padding:10px; border-radius:8px;">
+                <div style="margin-top:20px;">
+                    <button class="btn-primary" style="width:auto; margin-right:10px;" onclick="confirmPurchase()">Я оплатил</button>
+                    <button class="btn-outline" style="width:auto;" onclick="closeModal()">Отмена</button>
+                </div>
+            </div>`;
+        overlay.classList.add('open');
+    };
+
+    window.confirmPurchase = function() {
+        closeModal();
         hasPurchased = true;
         localStorage.setItem('laprpanel_purchased', 'true');
-        
-        // Показываем уведомление с данными
+        // Генерация портов и пароля в стиле larppanel.домен:порт
+        const randomDomain = Math.random().toString(36).substring(2, 6) + '.' + 
+                             Math.random().toString(36).substring(2, 6) + '.' + 
+                             Math.random().toString(36).substring(2, 6);
+        const port = Math.floor(Math.random() * 60000) + 1024;
+        const host = `larppanel.${randomDomain}:${port}`;
+        const password = 'larp' + Math.random().toString(36).substring(2, 8);
         const container = document.getElementById('notifications-container');
         const notif = document.createElement('div');
         notif.className = 'notification-item';
         notif.innerHTML = `
             <div class="progress-text" style="color:#00ff9d;">Покупка успешна!</div>
             <div style="font-size:14px; color:#ccc;">
-                <div>Порты: ${ports}</div>
+                <div>Хост: ${host}</div>
                 <div>Пароль: ${password}</div>
             </div>
             <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
         container.appendChild(notif);
-        
-        // Автоматически удаляем через 8 секунд
         setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
-        
-        // Обновляем страницу подписок и меню (Builder должен стать доступен)
-        showSubs();
+        showSubs(); // обновить страницу подписок
     };
 
-    // ---------- Screen Viewer (YouTube Dota 2 видео) ----------
+    // ========== Функции устройств ==========
     window.showScreenViewer = function(deviceName) {
         const overlay = document.getElementById('modal-overlay');
         const content = document.getElementById('modal-content');
-        const videoId = "3R3-X4Sd-X4"; // Dota 2 gameplay
+        // Используем локальное видео (Big Buck Bunny)
         content.innerHTML = `
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
             <h3 style="color:#00ff9d;">Screen Viewer - ${deviceName}</h3>
             <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
         </div>
-        <iframe class="screen-video" 
-                src="https://www.youtube.com/embed/${videoId}?autoplay=1&mute=1&controls=1&loop=1" 
-                allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+        <video class="screen-video" autoplay muted loop>
+            <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
+        </video>`;
         overlay.classList.add('open');
     };
+
+    window.showInfoModal = function(deviceName) {
+        const overlay = document.getElementById('modal-overlay');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:#00ff9d;">Информация о системе - ${deviceName}</h3>
+                <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
+            </div>
+            <div style="background:#12121f; padding:16px; border-radius:12px;">
+                <p><strong>ОС:</strong> Windows 10 Pro 22H2</p>
+                <p><strong>CPU:</strong> Intel Core i7-10700K</p>
+                <p><strong>RAM:</strong> 16 GB</p>
+                <p><strong>GPU:</strong> NVIDIA GeForce RTX 3060</p>
+                <p><strong>IP:</strong> 192.168.1.15</p>
+            </div>`;
+        overlay.classList.add('open');
+    };
+
+    window.showProcessList = function(deviceName) {
+        const overlay = document.getElementById('modal-overlay');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:#00ff9d;">Список процессов - ${deviceName}</h3>
+                <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
+            </div>
+            <div style="background:#12121f; padding:16px; border-radius:12px; max-height:400px; overflow-y:auto;">
+                <p>explorer.exe (PID: 1234)</p>
+                <p>chrome.exe (PID: 5678)</p>
+                <p>discord.exe (PID: 9012)</p>
+                <p>steam.exe (PID: 3456)</p>
+                <p>notepad.exe (PID: 7890)</p>
+            </div>`;
+        overlay.classList.add('open');
+    };
+
+    window.showShell = function(deviceName) {
+        const overlay = document.getElementById('modal-overlay');
+        const content = document.getElementById('modal-content');
+        content.innerHTML = `
+            <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
+                <h3 style="color:#00ff9d;">Командная строка - ${deviceName}</h3>
+                <i class="fas fa-times" style="cursor:pointer; color:#aaa;" onclick="closeModal()"></i>
+            </div>
+            <div style="background:#000; color:#0f0; padding:12px; border-radius:8px; font-family:monospace;">
+                Microsoft Windows [Version 10.0.19045.2486]<br>
+                (c) Microsoft Corporation. All rights reserved.<br><br>
+                C:\\Users\\User> _
+            </div>`;
+        overlay.classList.add('open');
+    };
+
     window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
 
     // ---------- Stiller ----------
