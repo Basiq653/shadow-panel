@@ -4,8 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shadow Panel</title>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2">
-    </script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
     <style>
         * {
@@ -23,42 +22,24 @@
             letter-spacing: 0.2px;
         }
 
-        /* ========== АВТОРИЗАЦИЯ ========== */
+        /* АВТОРИЗАЦИЯ */
         .login {
             height: 100%;
             display: flex;
             align-items: center;
             justify-content: center;
             background: radial-gradient(ellipse at 30% 30%, #14142a 0%, #07070c 70%);
-            position: relative;
         }
-
-        .login::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" opacity="0.03"><path d="M10 10 L90 10 L90 90 L10 90 Z" fill="none" stroke="white" stroke-width="0.5"/></svg>') repeat;
-            pointer-events: none;
-        }
-
         .card {
             background: rgba(12, 12, 18, 0.8);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             padding: 50px 44px;
             border-radius: 28px;
             width: 460px;
             text-align: center;
             border: 1px solid rgba(255, 255, 255, 0.06);
-            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.7), 0 0 0 1px rgba(0, 255, 157, 0.15);
-            transition: 0.3s ease;
-            z-index: 2;
+            box-shadow: 0 30px 50px rgba(0,0,0,0.7), 0 0 0 1px rgba(0,255,157,0.15);
         }
-
-        .card:hover {
-            box-shadow: 0 35px 60px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(0, 255, 157, 0.3);
-        }
-
         .card h1 {
             font-weight: 600;
             letter-spacing: 1.8px;
@@ -67,14 +48,11 @@
             background: linear-gradient(135deg, #00ff9d, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-
         .input-group {
             position: relative;
             margin: 18px 0;
         }
-
         .input-group i {
             position: absolute;
             left: 18px;
@@ -83,30 +61,23 @@
             color: #5a5a6e;
             font-size: 15px;
             transition: 0.3s;
-            pointer-events: none;
         }
-
         .input-group input {
             width: 100%;
             padding: 15px 18px 15px 48px;
-            background: rgba(20, 20, 30, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(20,20,30,0.7);
+            border: 1px solid rgba(255,255,255,0.08);
             border-radius: 14px;
             color: #fff;
             font-size: 15px;
             outline: none;
             transition: 0.25s;
-            backdrop-filter: blur(5px);
         }
-
         .input-group input:focus {
             border-color: #00ff9d;
-            box-shadow: 0 0 18px rgba(0, 255, 157, 0.2);
+            box-shadow: 0 0 18px rgba(0,255,157,0.2);
         }
-
-        .input-group input:focus+i {
-            color: #00ff9d;
-        }
+        .input-group input:focus+i { color: #00ff9d; }
 
         button {
             width: 100%;
@@ -118,11 +89,8 @@
             font-size: 15px;
             cursor: pointer;
             letter-spacing: 0.6px;
-            transition: all 0.25s;
-            position: relative;
-            overflow: hidden;
+            transition: 0.25s;
         }
-
         .btn-primary {
             background: linear-gradient(135deg, #00ff9d, #00cc7a);
             color: #0a0a0a;
@@ -130,12 +98,8 @@
         }
         .btn-primary:hover {
             transform: translateY(-2px);
-            box-shadow: 0 12px 28px rgba(0, 255, 157, 0.35);
+            box-shadow: 0 12px 28px rgba(0,255,157,0.35);
         }
-        .btn-primary:active {
-            transform: scale(0.97);
-        }
-
         .btn-outline {
             background: transparent;
             color: #b0b0c0;
@@ -144,84 +108,37 @@
         .btn-outline:hover {
             border-color: #00ff9d;
             color: #00ff9d;
-            background: rgba(0, 255, 157, 0.04);
+            background: rgba(0,255,157,0.04);
         }
-
-        .btn-ghost {
-            background: transparent;
-            color: #7a7a8c;
-            border: none;
-            width: auto;
-            display: inline;
-            padding: 6px 14px;
-            font-size: 14px;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            cursor: pointer;
-        }
-        .btn-ghost:hover {
-            color: #00ff9d;
-        }
-
         .status-message {
             margin-top: 20px;
             font-size: 14px;
             min-height: 20px;
             font-weight: 500;
-            transition: 0.3s;
             border-radius: 8px;
             padding: 8px 12px;
         }
-        .status-message.error {
-            color: #ff5e7a;
-            background: rgba(255, 50, 70, 0.08);
-        }
-        .status-message.success {
-            color: #00ff9d;
-            background: rgba(0, 255, 157, 0.08);
-        }
-        .status-message.info {
-            color: #ffb74d;
-            background: rgba(255, 183, 77, 0.08);
-        }
+        .status-message.error { color: #ff5e7a; background: rgba(255,50,70,0.08); }
+        .status-message.success { color: #00ff9d; background: rgba(0,255,157,0.08); }
+        .status-message.info { color: #ffb74d; background: rgba(255,183,77,0.08); }
 
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 24px 0;
-            color: #4a4a5a;
-            font-size: 13px;
-        }
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #222232;
-        }
-        .divider span {
-            margin: 0 16px;
-        }
-
-        /* ========== ДЭШБОРД ========== */
+        /* ДЭШБОРД */
         .dashboard {
             display: flex;
             height: 100%;
             background: #07070c;
         }
-
         .sidebar {
             width: 270px;
-            background: rgba(10, 10, 16, 0.9);
+            background: rgba(10,10,16,0.9);
             backdrop-filter: blur(16px);
-            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            border-right: 1px solid rgba(255,255,255,0.05);
             padding: 32px 20px;
             display: flex;
             flex-direction: column;
             gap: 6px;
-            box-shadow: 4px 0 25px rgba(0, 0, 0, 0.6);
+            box-shadow: 4px 0 25px rgba(0,0,0,0.6);
         }
-
         .sidebar h2 {
             font-weight: 600;
             letter-spacing: 1.5px;
@@ -231,9 +148,7 @@
             background: linear-gradient(135deg, #00ff9d, #00d4ff);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-clip: text;
         }
-
         .nav-item {
             padding: 13px 16px;
             cursor: pointer;
@@ -255,27 +170,19 @@
             transition: 0.25s;
         }
         .nav-item:hover {
-            background: rgba(255, 255, 255, 0.04);
+            background: rgba(255,255,255,0.04);
             color: #ddd;
-            border-color: rgba(255, 255, 255, 0.06);
+            border-color: rgba(255,255,255,0.06);
         }
-        .nav-item:hover i {
-            color: #00ff9d;
-        }
+        .nav-item:hover i { color: #00ff9d; }
         .nav-item.active {
-            background: rgba(0, 255, 157, 0.08);
+            background: rgba(0,255,157,0.08);
             color: #00ff9d;
-            border-color: rgba(0, 255, 157, 0.25);
-            box-shadow: 0 0 18px rgba(0, 255, 157, 0.1);
+            border-color: rgba(0,255,157,0.25);
+            box-shadow: 0 0 18px rgba(0,255,157,0.1);
         }
-        .nav-item.active i {
-            color: #00ff9d;
-        }
-
-        .spacer {
-            flex: 1;
-        }
-
+        .nav-item.active i { color: #00ff9d; }
+        .spacer { flex: 1; }
         .logout-btn {
             padding: 13px 16px;
             cursor: pointer;
@@ -287,35 +194,17 @@
             display: flex;
             align-items: center;
             gap: 12px;
-            margin-top: 8px;
         }
         .logout-btn:hover {
-            background: rgba(244, 114, 130, 0.1);
-            border: 1px solid rgba(244, 114, 130, 0.2);
+            background: rgba(244,114,130,0.1);
+            border: 1px solid rgba(244,114,130,0.2);
         }
-        .logout-btn i {
-            color: #f47282;
-        }
-
         .main {
             flex: 1;
             padding: 45px 55px;
             overflow-y: auto;
             background: #0b0b12;
-            scrollbar-width: thin;
-            scrollbar-color: #2a2a3a #0b0b12;
         }
-        .main::-webkit-scrollbar {
-            width: 6px;
-        }
-        .main::-webkit-scrollbar-track {
-            background: #0b0b12;
-        }
-        .main::-webkit-scrollbar-thumb {
-            background: #2a2a3a;
-            border-radius: 6px;
-        }
-
         .main h1 {
             font-size: 30px;
             font-weight: 600;
@@ -323,38 +212,35 @@
             color: #f0f0f5;
             letter-spacing: -0.3px;
         }
-        .main p {
-            color: #9090a0;
-            line-height: 1.7;
-        }
-
+        .main p { color: #9090a0; line-height: 1.7; }
         .card-content {
-            background: rgba(18, 18, 26, 0.7);
+            background: rgba(18,18,26,0.7);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255,255,255,0.05);
             border-radius: 22px;
             padding: 32px;
             margin-top: 22px;
-            box-shadow: 0 20px 35px rgba(0, 0, 0, 0.5);
-            transition: 0.25s;
+            box-shadow: 0 20px 35px rgba(0,0,0,0.5);
         }
-        .card-content:hover {
-            border-color: rgba(0, 255, 157, 0.15);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-        }
-
         .tag {
             display: inline-block;
-            background: rgba(0, 255, 157, 0.1);
+            background: rgba(0,255,157,0.1);
             color: #00ff9d;
             padding: 5px 14px;
             border-radius: 20px;
             font-size: 13px;
             font-weight: 600;
-            letter-spacing: 0.4px;
-            border: 1px solid rgba(0, 255, 157, 0.25);
+            border: 1px solid rgba(0,255,157,0.25);
         }
-
+        .creator-badge {
+            background: linear-gradient(135deg, #ffb347, #ff6b6b);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+            margin-left: 8px;
+            font-size: 14px;
+        }
+        button:disabled { opacity: 0.5; cursor: not-allowed; pointer-events: none; }
         .spinner {
             display: inline-block;
             width: 16px;
@@ -366,394 +252,289 @@
             margin-right: 8px;
             vertical-align: middle;
         }
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-            pointer-events: none;
+        /* Таблица пользователей (пример) */
+        .user-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
         }
-
-        .creator-badge {
-            background: linear-gradient(135deg, #ffb347, #ff6b6b);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            font-weight: 700;
-            margin-left: 8px;
-            font-size: 14px;
-            letter-spacing: 0.5px;
+        .user-table th, .user-table td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid #2a2a3a;
         }
+        .user-table th { color: #aaa; font-weight: 500; }
+        .user-table tr:hover { background: rgba(255,255,255,0.03); }
+        .status-dot {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            margin-right: 6px;
+        }
+        .status-online { background: #00ff9d; }
+        .status-offline { background: #555; }
     </style>
 </head>
 <body>
+<div id="root"></div>
 
-    <div id="root"></div>
+<script>
+    const supabaseClient = supabase.createClient(
+        'https://bozcxkjhlhjslperttio.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
+    );
 
-    <script>
-        const supabaseClient = supabase.createClient(
-            'https://bozcxkjhlhjslperttio.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImJvemN4a2pobGhqc2xwZXJ0dGlvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI4NTk1MjIsImV4cCI6MjA5ODQzNTUyMn0.oRfVst1Js9IwulNXZl_SqcnXXqybCzvIdgFvWcoDSYg'
-        );
+    let currentView = 'login';
+    let activeNav = 'panel';
+    let isCreator = false;
 
-        let currentView = 'login';
-        let activeNav = 'panel';
-        let isCreator = false; // флаг создателя
-
-        // ========== ОТОБРАЖЕНИЕ ФОРМЫ АВТОРИЗАЦИИ ==========
-        function showAuthForm(view = 'login') {
-            currentView = view;
-            const isLogin = view === 'login';
-            const title = 'SHADOW PANEL';
-            const btnText = isLogin ? 'Войти' : 'Зарегистрироваться';
-            const switchText = isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти';
-            const switchAction = isLogin ? "showAuthForm('register')" : "showAuthForm('login')";
-            const onSubmit = isLogin ? 'handleLogin()' : 'handleRegister()';
-
-            document.getElementById('root').innerHTML = `
-            <div class="login">
-              <div class="card">
-                <h1>${title}</h1>
-                <form id="authForm" onsubmit="event.preventDefault(); ${onSubmit}">
-                  <div class="input-group">
-                    <input type="email" id="email" placeholder="Email" required autocomplete="email">
-                    <i class="fas fa-envelope"></i>
-                  </div>
-                  <div class="input-group">
-                    <input type="password" id="password" placeholder="Пароль (минимум 6 символов)" required minlength="6" autocomplete="${isLogin ? 'current-password' : 'new-password'}">
-                    <i class="fas fa-lock"></i>
-                  </div>
-                  ${!isLogin ? `
-                  <div class="input-group">
-                    <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
-                    <i class="fas fa-check-circle"></i>
-                  </div>` : ''}
-                  <button type="submit" class="btn-primary" id="submitBtn">${btnText}</button>
-                </form>
-                <button class="btn-outline" onclick="${switchAction}">${switchText}</button>
-                <div class="status-message" id="status"></div>
-                ${isLogin ? `
-                <div class="divider"><span>или</span></div>
-                <button class="btn-ghost" onclick="showAuthForm('register')">Создать новый аккаунт</button>` : ''}
+    // ========== АВТОРИЗАЦИЯ ==========
+    function showAuthForm(view = 'login') {
+        currentView = view;
+        const isLogin = view === 'login';
+        document.getElementById('root').innerHTML = `
+        <div class="login">
+          <div class="card">
+            <h1>SHADOW PANEL</h1>
+            <form onsubmit="event.preventDefault(); ${isLogin ? 'handleLogin()' : 'handleRegister()'}">
+              <div class="input-group">
+                <input type="email" id="email" placeholder="Email" required>
+                <i class="fas fa-envelope"></i>
               </div>
+              <div class="input-group">
+                <input type="password" id="password" placeholder="Пароль (мин. 6 символов)" required minlength="6">
+                <i class="fas fa-lock"></i>
+              </div>
+              ${!isLogin ? `
+              <div class="input-group">
+                <input type="password" id="passwordConfirm" placeholder="Подтвердите пароль" required minlength="6">
+                <i class="fas fa-check-circle"></i>
+              </div>` : ''}
+              <button type="submit" class="btn-primary" id="submitBtn">${isLogin ? 'Войти' : 'Зарегистрироваться'}</button>
+            </form>
+            <button class="btn-outline" onclick="showAuthForm('${isLogin ? 'register' : 'login'}')">
+              ${isLogin ? 'Нет аккаунта? Зарегистрироваться' : 'Уже есть аккаунт? Войти'}
+            </button>
+            <div class="status-message" id="status"></div>
+          </div>
+        </div>`;
+    }
+
+    function setStatus(msg, type) {
+        const el = document.getElementById('status');
+        if (el) { el.textContent = msg; el.className = 'status-message ' + type; }
+    }
+
+    function setLoading(loading) {
+        const btn = document.getElementById('submitBtn');
+        if (!btn) return;
+        btn.disabled = loading;
+        btn.innerHTML = loading ? '<span class="spinner"></span> Загрузка...' : (currentView === 'login' ? 'Войти' : 'Зарегистрироваться');
+    }
+
+    async function handleRegister() {
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        const pass2 = document.getElementById('passwordConfirm')?.value;
+        if (!email || !pass) return setStatus('Заполните все поля', 'error');
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return setStatus('Некорректный email', 'error');
+        if (pass.length < 6) return setStatus('Минимум 6 символов', 'error');
+        if (pass2 && pass !== pass2) return setStatus('Пароли не совпадают', 'error');
+
+        setLoading(true);
+        const { data, error } = await supabaseClient.auth.signUp({ email, password: pass });
+        setLoading(false);
+        if (error) return setStatus(error.message.includes('already') ? 'Пользователь уже существует' : error.message, 'error');
+        if (data?.session) { showDashboard(); }
+        else { setStatus('Подтвердите email (проверьте почту)', 'success'); setTimeout(() => showAuthForm('login'), 3000); }
+    }
+
+    async function handleLogin() {
+        const email = document.getElementById('email').value.trim();
+        const pass = document.getElementById('password').value;
+        if (!email || !pass) return setStatus('Заполните все поля', 'error');
+        setLoading(true);
+        const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password: pass });
+        setLoading(false);
+        if (error) return setStatus('Неверный email или пароль', 'error');
+        if (data?.session) showDashboard();
+    }
+
+    // ========== ДЭШБОРД ==========
+    async function showDashboard() {
+        currentView = 'dashboard';
+        const { data: { user } } = await supabaseClient.auth.getUser();
+        isCreator = (user?.email === 'kilersosiska130@gmail.com');
+
+        document.getElementById('root').innerHTML = `
+        <div class="dashboard">
+          <div class="sidebar">
+            <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
+            <div class="nav-item ${activeNav==='panel'?'active':''}" onclick="showPanel()">
+              <i class="fas fa-users"></i> Панель
             </div>
-          `;
+            <div class="nav-item ${activeNav==='builder'?'active':''}" onclick="showBuilder()">
+              <i class="fas fa-cubes"></i> Builder
+            </div>
+            <div class="nav-item ${activeNav==='notify'?'active':''}" onclick="showNotify()">
+              <i class="fas fa-bell"></i> Уведомления
+            </div>
+            <div class="nav-item ${activeNav==='community'?'active':''}" onclick="showCommunity()">
+              <i class="fas fa-comments"></i> Форум
+            </div>
+            <div class="nav-item ${activeNav==='subs'?'active':''}" onclick="showSubs()">
+              <i class="fas fa-crown"></i> Подписки
+            </div>
+            <div class="nav-item ${activeNav==='settings'?'active':''}" onclick="showSettings()">
+              <i class="fas fa-gear"></i> Настройки
+            </div>
+            <div class="spacer"></div>
+            <div class="logout-btn" onclick="handleLogout()">
+              <i class="fas fa-right-from-bracket"></i> Выйти
+            </div>
+          </div>
+          <div class="main" id="content">${getPanelContent()}</div>
+        </div>`;
+    }
+
+    function updateActiveNav(nav) {
+        activeNav = nav;
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        const items = document.querySelectorAll('.nav-item');
+        const map = { panel:0, builder:1, notify:2, community:3, subs:4, settings:5 };
+        if (items[map[nav]]) items[map[nav]].classList.add('active');
+    }
+
+    function getPanelContent() {
+        return `
+        <h1>Панель управления</h1>
+        <p>Список подключенных устройств <span class="tag">Demo</span></p>
+        <div class="card-content">
+          <table class="user-table">
+            <thead><tr><th>ID</th><th>Имя</th><th>ОС</th><th>Статус</th></tr></thead>
+            <tbody>
+              <tr><td>1024</td><td>DESKTOP-A1B2C3</td><td>Windows 10 Pro</td><td><span class="status-dot status-online"></span>Online</td></tr>
+              <tr><td>2048</td><td>LAPTOP-X7Y8Z9</td><td>Windows 11</td><td><span class="status-dot status-offline"></span>Offline</td></tr>
+              <tr><td>3072</td><td>SERVER-DB01</td><td>Linux Ubuntu</td><td><span class="status-dot status-online"></span>Online</td></tr>
+            </tbody>
+          </table>
+        </div>`;
+    }
+
+    function showPanel() { updateActiveNav('panel'); document.getElementById('content').innerHTML = getPanelContent(); }
+
+    function showBuilder() {
+        updateActiveNav('builder');
+        const content = document.getElementById('content');
+        if (isCreator) {
+            content.innerHTML = `
+            <h1>Builder</h1>
+            <div class="card-content">
+              <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Доступ открыт (создатель)</p>
+              <p>Конструктор сборок и модулей.</p>
+              <div style="display:flex; gap:15px; margin-top:20px;">
+                <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
+                  <i class="fas fa-code" style="color:#00ff9d;"></i> Редактор
+                </div>
+                <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
+                  <i class="fas fa-database" style="color:#00ff9d;"></i> Данные
+                </div>
+              </div>
+            </div>`;
+        } else {
+            content.innerHTML = `
+            <h1>Builder</h1>
+            <div class="card-content">
+              <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Требуется подписка</p>
+              <button class="btn-outline" style="width:auto; margin-top:16px;" onclick="showSubs()">Перейти к подпискам</button>
+            </div>`;
         }
+    }
 
-        function isValidEmail(email) {
-            return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-        }
+    function showNotify() {
+        updateActiveNav('notify');
+        document.getElementById('content').innerHTML = `
+        <h1>Уведомления</h1>
+        <div class="card-content">
+          <p>Настройка уведомлений о новых подключениях, задачах и ошибках.</p>
+          <div style="margin-top:16px;"><i class="fas fa-check-circle" style="color:#00ff9d;"></i> Push-уведомления включены</div>
+        </div>`;
+    }
 
-        function setStatus(message, type = 'error') {
-            const statusEl = document.getElementById('status');
-            if (!statusEl) return;
-            statusEl.textContent = message;
-            statusEl.className = 'status-message ' + type;
-        }
+    function showCommunity() {
+        updateActiveNav('community');
+        document.getElementById('content').innerHTML = `
+        <h1>Форум</h1>
+        <div class="card-content">
+          <p>Общий чат и новости проекта.</p>
+          <div style="margin-top:16px; padding:12px; background:#12121f; border-radius:12px;">
+            <strong>Admin:</strong> Добро пожаловать в Shadow Panel!
+          </div>
+        </div>`;
+    }
 
-        function setLoading(isLoading) {
-            const btn = document.getElementById('submitBtn');
-            if (!btn) return;
-            if (isLoading) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner"></span> Загрузка...';
-            } else {
-                btn.disabled = false;
-                btn.textContent = currentView === 'login' ? 'Войти' : 'Зарегистрироваться';
-            }
-        }
+    function showSubs() {
+        updateActiveNav('subs');
+        document.getElementById('content').innerHTML = `
+        <h1>Подписки</h1>
+        <div class="card-content">
+          <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
+          <p>Доступ к Builder и расширенным функциям.</p>
+          <button class="btn-primary" style="width:auto; margin-top:16px;" disabled>Оплатить (скоро)</button>
+          ${isCreator ? '<p style="margin-top:12px; color:#ffb347;">Вы создатель — подписка не требуется.</p>' : ''}
+        </div>`;
+    }
 
-        async function handleRegister() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-            const passwordConfirm = document.getElementById('passwordConfirm')?.value;
+    function showSettings() {
+        updateActiveNav('settings');
+        document.getElementById('content').innerHTML = `
+        <h1>Настройки</h1>
+        <div class="card-content">
+          <p>Email: <strong id="userEmail">загрузка...</strong></p>
+          <button class="btn-outline" style="width:auto; margin-top:20px;" onclick="handleLogout()">Выйти</button>
+        </div>`;
+        supabaseClient.auth.getUser().then(({ data: { user } }) => {
+            const el = document.getElementById('userEmail');
+            if (el && user?.email) el.textContent = user.email;
+        });
+    }
 
-            if (!email || !password) {
-                setStatus('Заполните все поля', 'error');
-                return;
-            }
-            if (!isValidEmail(email)) {
-                setStatus('Некорректный email', 'error');
-                return;
-            }
-            if (password.length < 6) {
-                setStatus('Пароль должен быть не менее 6 символов', 'error');
-                return;
-            }
-            if (passwordConfirm !== undefined && password !== passwordConfirm) {
-                setStatus('Пароли не совпадают', 'error');
-                return;
-            }
+    async function handleLogout() {
+        await supabaseClient.auth.signOut();
+        currentView = 'login';
+        activeNav = 'panel';
+        isCreator = false;
+        showAuthForm('login');
+    }
 
-            setLoading(true);
-            setStatus('');
-
-            const { data, error } = await supabaseClient.auth.signUp({ email, password });
-            setLoading(false);
-
-            if (error) {
-                if (error.message.includes('already registered') || error.message.includes('already exists')) {
-                    setStatus('Пользователь с таким email уже существует.', 'error');
-                } else {
-                    setStatus('Ошибка: ' + error.message, 'error');
-                }
-                return;
-            }
-
-            if (data?.user?.identities?.length === 0) {
-                setStatus('Пользователь уже существует. Войдите.', 'error');
-                return;
-            }
-
-            if (data?.session === null) {
-                setStatus('Регистрация успешна! Проверьте почту для подтверждения.', 'success');
-                document.getElementById('email').value = '';
-                document.getElementById('password').value = '';
-                if (document.getElementById('passwordConfirm')) document.getElementById('passwordConfirm').value = '';
-                setTimeout(() => {
-                    showAuthForm('login');
-                    setStatus('Теперь можно войти после подтверждения email.', 'info');
-                }, 3000);
-            } else {
-                setStatus('Регистрация успешна! Выполняется вход...', 'success');
-                setTimeout(() => showDashboard(), 800);
-            }
-        }
-
-        async function handleLogin() {
-            const email = document.getElementById('email').value.trim();
-            const password = document.getElementById('password').value;
-
-            if (!email || !password) {
-                setStatus('Заполните все поля', 'error');
-                return;
-            }
-            if (!isValidEmail(email)) {
-                setStatus('Некорректный email', 'error');
-                return;
-            }
-
-            setLoading(true);
-            setStatus('');
-
-            const { data, error } = await supabaseClient.auth.signInWithPassword({ email, password });
-            setLoading(false);
-
-            if (error) {
-                if (error.message.includes('Invalid login credentials')) {
-                    setStatus('Неверный email или пароль', 'error');
-                } else if (error.message.includes('Email not confirmed')) {
-                    setStatus('Email не подтверждён. Проверьте почту.', 'error');
-                } else {
-                    setStatus('Ошибка: ' + error.message, 'error');
-                }
-                return;
-            }
-
-            if (data?.session) {
-                setStatus('Вход выполнен!', 'success');
-                setTimeout(() => showDashboard(), 500);
-            } else {
-                setStatus('Не удалось войти.', 'error');
-            }
-        }
-
-        // ========== ДЭШБОРД ==========
-        async function showDashboard() {
-            currentView = 'dashboard';
-            // Определяем, является ли пользователь создателем
+    // Инициализация
+    window.onload = async () => {
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (session) {
             const { data: { user } } = await supabaseClient.auth.getUser();
             isCreator = (user?.email === 'kilersosiska130@gmail.com');
-
-            document.getElementById('root').innerHTML = `
-            <div class="dashboard">
-              <div class="sidebar">
-                <h2>SHADOW<span class="creator-badge">${isCreator ? 'CREATOR' : ''}</span></h2>
-                <div class="nav-item ${activeNav === 'panel' ? 'active' : ''}" onclick="showPanel()">
-                  <i class="fas fa-tachometer-alt"></i> Панель
-                </div>
-                <div class="nav-item ${activeNav === 'builder' ? 'active' : ''}" onclick="showBuilder()">
-                  <i class="fas fa-cubes"></i> Builder
-                </div>
-                <div class="nav-item ${activeNav === 'subs' ? 'active' : ''}" onclick="showSubs()">
-                  <i class="fas fa-crown"></i> Подписки
-                </div>
-                <div class="nav-item ${activeNav === 'settings' ? 'active' : ''}" onclick="showSettings()">
-                  <i class="fas fa-gear"></i> Настройки
-                </div>
-                <div class="spacer"></div>
-                <div class="logout-btn" onclick="handleLogout()">
-                  <i class="fas fa-right-from-bracket"></i> Выйти
-                </div>
-              </div>
-              <div class="main" id="content">
-                ${getPanelContent()}
-              </div>
-            </div>
-          `;
-            updateActiveNav(activeNav);
+            showDashboard();
+        } else {
+            showAuthForm('login');
         }
+    };
 
-        function getPanelContent() {
-            return `
-            <h1>Панель управления</h1>
-            <p>Добро пожаловать в <span class="tag">Shadow Panel</span></p>
-            <div class="card-content">
-              <p><i class="fas fa-check-circle" style="color:#00ff9d;"></i> Вы успешно авторизованы</p>
-              <p style="margin-top:10px;">Выберите раздел в меню слева, чтобы продолжить.</p>
-              ${isCreator ? '<p style="margin-top:12px; color:#ffb347;"><i class="fas fa-star"></i> Статус создателя активен — все модули разблокированы.</p>' : ''}
-            </div>
-          `;
-        }
-
-        function updateActiveNav(nav) {
-            activeNav = nav;
-            document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('active'));
-            const items = document.querySelectorAll('.nav-item');
-            const navMap = { panel: 0, builder: 1, subs: 2, settings: 3 };
-            if (items[navMap[nav]]) {
-                items[navMap[nav]].classList.add('active');
-            }
-        }
-
-        function showBuilder() {
-            updateActiveNav('builder');
-            const contentDiv = document.getElementById('content');
-            if (!contentDiv) return;
-
-            if (isCreator) {
-                contentDiv.innerHTML = `
-                <h1>Builder</h1>
-                <div class="card-content">
-                  <p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Доступ открыт (создатель)</p>
-                  <p style="margin-top:12px;">Инструменты разработчика активны. Вы можете настраивать модули системы.</p>
-                  <div style="margin-top:20px; display:flex; gap:15px; flex-wrap:wrap;">
-                    <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
-                      <i class="fas fa-code" style="color:#00ff9d; font-size:20px;"></i>
-                      <p style="margin-top:8px; font-weight:600;">Редактор</p>
-                    </div>
-                    <div style="background:#12121f; border:1px solid #2a2a3a; border-radius:14px; padding:18px; width:160px;">
-                      <i class="fas fa-database" style="color:#00ff9d; font-size:20px;"></i>
-                      <p style="margin-top:8px; font-weight:600;">Данные</p>
-                    </div>
-                  </div>
-                </div>
-              `;
-            } else {
-                contentDiv.innerHTML = `
-                <h1>Builder</h1>
-                <div class="card-content">
-                  <p><i class="fas fa-lock" style="color:#ffb74d;"></i> Этот раздел доступен по подписке.</p>
-                  <p style="margin-top:12px;">Перейдите в <strong>Подписки</strong>, чтобы активировать доступ.</p>
-                  <button class="btn-outline" style="width:auto; margin-top:16px; padding:12px 24px;" onclick="showSubs()">
-                    <i class="fas fa-crown"></i> Перейти к подпискам
-                  </button>
-                </div>
-              `;
-            }
-        }
-
-        function showPanel() {
-            updateActiveNav('panel');
-            const contentDiv = document.getElementById('content');
-            if (contentDiv) contentDiv.innerHTML = getPanelContent();
-        }
-
-        function showSubs() {
-            updateActiveNav('subs');
-            const contentDiv = document.getElementById('content');
-            if (contentDiv) {
-                contentDiv.innerHTML = `
-                <h1>Подписки</h1>
-                <div class="card-content">
-                  <p><strong>1 месяц</strong> — <span style="color:#00ff9d; font-size:20px;">500₽</span></p>
-                  <p style="margin-top:8px; color:#9090a0;">Полный доступ к Builder и всем инструментам.</p>
-                  <button class="btn-primary" style="width:auto; margin-top:16px; padding:12px 28px;" disabled>
-                    <i class="fas fa-credit-card"></i> Оплатить (скоро)
-                  </button>
-                  <p style="margin-top:12px; font-size:13px; color:#5a5a6e;">Платёжная система в разработке.</p>
-                  ${isCreator ? '<p style="margin-top:12px; color:#ffb347;">Вы создатель — подписка не требуется.</p>' : ''}
-                </div>
-              `;
-            }
-        }
-
-        function showSettings() {
-            updateActiveNav('settings');
-            const contentDiv = document.getElementById('content');
-            if (contentDiv) {
-                contentDiv.innerHTML = `
-                <h1>Настройки</h1>
-                <div class="card-content">
-                  <p>Управление аккаунтом и безопасность.</p>
-                  <p style="margin-top:12px; color:#9090a0;">Email: <strong id="userEmail">загрузка...</strong></p>
-                  <button class="btn-outline" style="width:auto; margin-top:20px; padding:12px 24px;" onclick="handleLogout()">
-                    <i class="fas fa-right-from-bracket"></i> Выйти из аккаунта
-                  </button>
-                </div>
-              `;
-                loadUserEmail();
-            }
-        }
-
-        async function loadUserEmail() {
-            const { data: { user } } = await supabaseClient.auth.getUser();
-            const emailEl = document.getElementById('userEmail');
-            if (emailEl && user?.email) {
-                emailEl.textContent = user.email;
-            } else if (emailEl) {
-                emailEl.textContent = 'неизвестно';
-            }
-        }
-
-        async function handleLogout() {
-            await supabaseClient.auth.signOut();
+    supabaseClient.auth.onAuthStateChange((event, session) => {
+        if (event === 'SIGNED_OUT') {
             currentView = 'login';
             activeNav = 'panel';
             isCreator = false;
             showAuthForm('login');
+        } else if (event === 'SIGNED_IN' && session) {
+            supabaseClient.auth.getUser().then(({ data: { user } }) => {
+                isCreator = (user?.email === 'kilersosiska130@gmail.com');
+                showDashboard();
+            });
         }
-
-        // ========== ИНИЦИАЛИЗАЦИЯ ==========
-        window.onload = async () => {
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session) {
-                    const { data: { user } } = await supabaseClient.auth.getUser();
-                    if (user) {
-                        // Установим isCreator до рендера дашборда
-                        isCreator = (user.email === 'kilersosiska130@gmail.com');
-                        showDashboard();
-                        return;
-                    }
-                }
-                showAuthForm('login');
-            } catch (e) {
-                console.error('Ошибка инициализации:', e);
-                showAuthForm('login');
-            }
-        };
-
-        supabaseClient.auth.onAuthStateChange((event, session) => {
-            if (event === 'SIGNED_OUT') {
-                currentView = 'login';
-                activeNav = 'panel';
-                isCreator = false;
-                showAuthForm('login');
-            } else if (event === 'SIGNED_IN' && session) {
-                if (currentView !== 'dashboard') {
-                    // обновим isCreator перед показом
-                    supabaseClient.auth.getUser().then(({ data: { user } }) => {
-                        isCreator = (user?.email === 'kilersosiska130@gmail.com');
-                        showDashboard();
-                    });
-                }
-            }
-        });
-    </script>
+    });
+</script>
 </body>
 </html>
